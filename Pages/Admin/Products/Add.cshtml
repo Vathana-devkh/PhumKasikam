@@ -1,0 +1,150 @@
+@page
+@model PhumKasikam.Pages.Admin.Products.AddModel
+@{
+    ViewData["Title"] = "បន្ថែមផលិតផលថ្មី - Admin";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+<div class="container mt-5 pt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            
+            <div class="mb-3 animate__animated animate__fadeIn">
+                <a asp-page="/Market/market" class="text-success text-decoration-none fw-bold small">
+                    <i class="bi bi-arrow-left-short fs-5 align-middle"></i> ត្រឡប់ទៅកាន់ហាងទំនិញ
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white animate__animated animate__fadeInUp">
+                <div class="card-header bg-dark text-white p-4 border-0 d-flex align-items-center justify-content-between">
+                    <div>
+                        <h4 class="fw-bold mb-1"><i class="bi bi-plus-circle-fill text-warning me-2"></i> បន្ថែមផលិតផលថ្មី</h4>
+                        <p class="text-white-50 small mb-0">បញ្ចូលព័ត៌មានកសិផល ឬទំនិញដើម្បីដាក់លក់លើប្រព័ន្ធ</p>
+                    </div>
+                    <i class="bi bi-box-seizure display-6 text-white-50"></i>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                        <div class="row g-4">
+                            <div class="col-md-12">
+                                <label asp-for="Product.Name" class="form-label fw-bold text-secondary">ឈ្មោះផលិតផល <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-tag text-muted"></i></span>
+                                    <input asp-for="Product.Name" class="form-control border-start-0 ps-0 shadow-none bg-light focus-white" placeholder="ឧ. ស្វាយកែវរមៀតធម្មជាតិ" required />
+                                </div>
+                                <span asp-validation-for="Product.Name" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Product.Category" class="form-label fw-bold text-secondary">ប្រភេទកសិផល</label>
+                                <select asp-for="Product.Category" class="form-select bg-light shadow-none" required>
+                                    <option value="">-- រើសប្រភេទ --</option>
+                                    <option value="បន្លែបង្ការ">បន្លែបង្ការ</option>
+                                    <option value="ផ្លែឈើស្រស់">ផ្លែឈើស្រស់</option>
+                                    <option value="គ្រឿងទេស">គ្រឿងទេស</option>
+                                    <option value="ពូជដំណាំ">ពូជដំណាំ</option>
+                                    <option value="ជី និងថ្នាំកសិកម្ម">ជី និងថ្នាំកសិកម្ម</option>
+                                </select>
+                                <span asp-validation-for="Product.Category" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Product.Unit" class="form-label fw-bold text-secondary">ខ្នាត/ឯកតា <span class="text-danger">*</span></label>
+                                <input asp-for="Product.Unit" class="form-control bg-light shadow-none" placeholder="ឧ. គីឡូក្រាម, កញ្ចប់, ឡូ" required />
+                                <span asp-validation-for="Product.Unit" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="Product.Price" class="form-label fw-bold text-secondary">តម្លៃលក់ (រៀល) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0 fw-bold text-muted">៛</span>
+                                    <input asp-for="Product.Price" type="number" class="form-control border-start-0 ps-0 shadow-none bg-light" placeholder="ឧ. ៥០០០" required />
+                                </div>
+                                <span asp-validation-for="Product.Price" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="Product.Description" class="form-label fw-bold text-secondary">ការពិពណ៌នាពីផលិតផល</label>
+                                <textarea asp-for="Product.Description" class="form-control bg-light shadow-none" rows="4" placeholder="រៀបរាប់ពីគុណភាព ផ្ដល់ព័ត៌មានបន្ថែមដល់អ្នកទិញ..."></textarea>
+                                <span asp-validation-for="Product.Description" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold text-secondary">រូបភាពផលិតផល</label>
+                                <div class="border-2 border-dashed rounded-4 p-4 text-center position-relative bg-light transition-all" id="dropZone">
+                                    <input type="file" asp-for="UploadedImage" class="position-absolute top-0 start-0 w-100 h-100 opacity-0" style="cursor: pointer;" id="imageInput" accept="image/*" />
+                                    <div id="uploadPrompt">
+                                        <i class="bi bi-cloud-arrow-up-fill text-success display-4"></i>
+                                        <h6 class="fw-bold text-dark mt-2">ចុចទីនេះដើម្បីជ្រើសរើសរូបភាព</h6>
+                                        <p class="text-muted small mb-0">គាំទ្រហ្វាយប្រភេទ JPG, PNG ឬ WEBP</p>
+                                    </div>
+                                    <div id="imagePreviewContainer" class="d-none mt-2">
+                                        <img id="imagePreview" src="#" class="img-fluid rounded-3 shadow-sm object-fit-cover" style="max-height: 200px;" />
+                                        <p class="text-success small fw-bold mt-2 mb-0"><i class="bi bi-check-circle-fill"></i> រូបភាពត្រូវបានជ្រើសរើស</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-3 mt-5 border-top pt-4">
+                            <a asp-page="/Market/market" class="btn btn-light rounded-pill px-4 py-2 fw-bold border">បោះបង់</a>
+                            <button type="submit" class="btn btn-success rounded-pill px-5 py-2 fw-bold shadow-sm"><i class="bi bi-save2-fill me-2"></i> រក្សាទុកទិន្នន័យ</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        // JavaScript សម្រាប់ធ្វើ Image Preview ទាន់ចិត្ត
+        const imageInput = document.getElementById('imageInput');
+        const uploadPrompt = document.getElementById('uploadPrompt');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+
+        imageInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.setAttribute('src', e.target.result);
+                    uploadPrompt.classList.add('d-none');
+                    imagePreviewContainer.classList.remove('d-none');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                uploadPrompt.classList.remove('d-none');
+                imagePreviewContainer.classList.add('d-none');
+            }
+        });
+    </script>
+}
+
+<style>
+    /* Styling Custom UI Add Product */
+    .border-dashed {
+        border: 2px dashed #dee2e6 !important;
+    }
+    .border-dashed:hover {
+        border-color: #198754 !important;
+        background-color: rgba(25, 135, 84, 0.02) !important;
+    }
+    .focus-white:focus {
+        background-color: #fff !important;
+        border-color: #198754 !important;
+    }
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+</style>

@@ -1,0 +1,375 @@
+@page
+@model PhumKasikam.Pages.Admin.Products.IndexModel
+@{
+    ViewData["Title"] = "គ្រប់គ្រងទំនិញស្តង់ដារ - Admin";
+    Layout = "_AdminLayout";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-dark mb-0"><i class="bi bi-shield-lock-fill text-success"></i> គ្រប់គ្រងផលិតផលស្តង់ដារ Web Store</h2>
+    <button type="button" class="btn btn-success rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#createProductModal" onclick="setTimeout(() => togglePriceFields('create'), 200)">
+        <i class="bi bi-plus-circle-fill me-2"></i> បន្ថែមផលិតផលថ្មី
+    </button>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 bg-white">
+        <thead class="table-light text-secondary uppercase small fw-bold">
+            <tr>
+                <th class="ps-4">រូបភាព</th>
+                <th>ឈ្មោះផលិតផល</th>
+                <th>ប្រភេទកសិផល</th>
+                <th>តម្លៃលក់បច្ចុប្បន្ន</th>
+                <th>តម្លៃដើម (មុនចុះថ្លៃ)</th>
+                <th>ប្រភេទតម្លៃលក់</th>
+                <th>ខ្នាត/ឯកតា</th>
+                <th>ស្ថានភាពស្តុក</th>
+                <th class="text-end pe-4">សកម្មភាព</th>
+                <th>ការពិពណ៌នា</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ProductsList)
+            {
+                <tr>
+                    <td class="ps-4">
+                        <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "https://placehold.co/600x400" : item.ImageUrl)" 
+                            id="img-@item.Id" class="rounded-3 object-fit-cover" style="width: 50px; height: 50px;">
+                    </td>
+                    <td>
+                        <div class="fw-bold text-dark" id="name-@item.Id">@item.Name</div>
+                    </td>
+                    <td>
+                        <span class="badge bg-success-subtle px-3 py-2 rounded-pill fw-bold" id="cat-@item.Id">@item.Category</span>
+                    </td>
+                    <td>
+                        <span class="fw-bold text-success" id="price-@item.Id">@item.Price.ToString("N0")</span> ៛
+                    </td>
+                    <td>
+                        <span class="fw-bold text-danger text-decoration-line-through" id="orig-price-@item.Id">
+                            @(item.OriginalPrice?.ToString("N0") ?? "-")
+                        </span> ៛
+                    </td>
+                    <td>
+                        <span class="badge @(item.PriceType == "discount" ? "bg-warning-subtle text-warning" : "bg-info-subtle text-info") rounded-pill px-2 py-1 small">
+                            @(item.PriceType == "discount" ? "បញ្ចុះតម្លៃ" : "លក់ធម្មតា")
+                        </span>
+                    </td>
+                    <td>
+                        <span class="text-muted" id="unit-@item.Id">@item.Unit</span>
+                    </td>
+                    <td>
+                        <span class="badge bg-success rounded-pill px-2 py-1 small"><i class="bi bi-check-circle"></i> មានស្តុក</span>
+                    </td>
+                    <td class="text-end pe-4">
+                        <button class="btn btn-sm btn-light text-primary rounded-circle" onclick="openEditModal(@item.Id)"><i class="bi bi-pencil-square"></i></button>
+                        <button class="btn btn-sm btn-light text-danger rounded-circle" onclick="openDeleteModal(@item.Id, '@item.Name')"><i class="bi bi-trash3-fill"></i></button>
+                    </td>
+                    <td>
+                        <div class="truncate-text text-muted" title="@item.Description">@item.Description</div>
+                        <span id="desc-@item.Id" style="display:none;">@item.Description</span>
+                    </td>
+                </tr> }
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<div class="modal fade" id="createProductModal" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header bg-success text-white rounded-top-4 py-3">
+                <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle me-2"></i>បន្ថែមផលិតផលស្តង់ដារថ្មី</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" asp-page-handler="CreateProduct" enctype="multipart/form-data">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">ឈ្មោះផលិតផល <span class="text-danger">*</span></label>
+                        <input type="text" asp-for="NewProduct.Name" class="form-control rounded-3" placeholder="ឧ. ស្វាយកែវរមៀតផ្អែមស្រស់" required />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold small text-secondary">ប្រភេទជំពូកទំនិញ</label>
+                            <select asp-for="NewProduct.Category" class="form-select rounded-3" required>
+                                <option value="បន្លែសរីរាង្គ">បន្លែសរីរាង្គ</option>
+                                <option value="ផ្លែឈើដាំដុះ">ផ្លែឈើដាំដុះ</option>
+                                <option value="គ្រាប់ពូជកសិកម្ម">គ្រាប់ពូជកសិកម្ម</option>
+                                <option value="ជី និងថ្នាំកសិកម្ម">ជី និងថ្នាំកសិកម្ម</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold small text-secondary">ខ្នាត/ឯកតាគិតលុយ <span class="text-danger">*</span></label>
+                            <input type="text" asp-for="NewProduct.Unit" class="form-control rounded-3" placeholder="ឧ. គីឡូក្រាម, កញ្ចប់, ឡូ" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">ប្រភេទតម្លៃលក់</label>
+                        <div class="d-flex gap-4 p-2 bg-light rounded-3 border">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="CreatePriceType" id="createNormalPrice" value="normal" checked onchange="togglePriceFields('create')">
+                                <label class="form-check-label fw-semibold text-dark small" for="createNormalPrice">
+                                    <i class="bi bi-tag-fill text-primary me-1"></i> លក់តម្លៃធម្មតា
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="CreatePriceType" id="createDiscountPrice" value="discount" onchange="togglePriceFields('create')">
+                                <label class="form-check-label fw-semibold text-danger small" for="createDiscountPrice">
+                                    <i class="bi bi-lightning-charge-fill text-warning me-1"></i> មានការបញ្ចុះតម្លៃ
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold small text-secondary" id="create-price-label">តម្លៃលក់ទូទៅ (រៀល) <span class="text-danger">*</span></label>
+                            <input type="number" asp-for="NewProduct.Price" id="create-price-input" class="form-control rounded-3" placeholder="ឧ. ៥០០០" required />
+                        </div>
+                        <div class="col-md-6 mb-3" id="create-original-box" style="display: none;">
+                            <label class="form-label fw-bold small text-danger">តម្លៃដើម មុនចុះថ្លៃ (រៀល) <span class="text-danger">*</span></label>
+                            <input type="number" asp-for="NewProduct.OriginalPrice" id="create-original-input" class="form-control rounded-3" placeholder="ឧ. ៦០០០" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">ការពិពណ៌នាលម្អិត</label>
+                        <textarea asp-for="NewProduct.Description" class="form-control rounded-3" rows="3" placeholder="ព័ត៌មានលម្អិត បញ្ជាក់ពីគុណភាពផលិតផល..."></textarea>
+                    </div>
+                    
+                    <div class="mb-3 p-3 bg-light rounded-3 border">
+                        <label class="form-label fw-bold small text-success d-block mb-2"><i class="bi bi-image me-1"></i> ប្រភពរូបភាពផលិតផល</label>
+                        <div class="mb-2">
+                            <input type="url" name="ImageUrlLink" id="create-url-link" class="form-control form-control-sm rounded-2" placeholder="ដាក់តំណភ្ជាប់ Image URL (https://...)" oninput="previewFromUrl(this.value, 'create-preview')" />
+                        </div>
+                        <div class="text-center my-1 small text-muted">— ឬ —</div>
+                        <div>
+                            <input type="file" name="UploadImage" class="form-control form-control-sm rounded-2" accept="image/*" onchange="previewImage(event, 'create-preview')" />
+                        </div>
+                        <div class="mt-3 text-center">
+                            <img id="create-preview" src="https://placehold.co/150x100?text=Preview" class="img-thumbnail rounded-3" style="max-height: 120px; object-fit: cover;">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">បោះបង់</button>
+                    <button type="submit" class="btn btn-success rounded-pill px-4">រក្សាទុក</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editProductModal" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header bg-primary text-white rounded-top-4 py-3">
+                <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2"></i>កែប្រែព័ត៌មានផលិតផលស្តង់ដារ</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" asp-page-handler="EditProduct" enctype="multipart/form-data">
+                <input type="hidden" asp-for="EditProduct.Id" id="edit-id" />
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">ឈ្មោះផលិតផល</label>
+                        <input type="text" asp-for="EditProduct.Name" id="edit-name" class="form-control rounded-3" required />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold small text-secondary">ប្រភេទជំពូកទំនិញ</label>
+                            <select asp-for="EditProduct.Category" id="edit-category" class="form-select rounded-3" required>
+                                <option value="បន្លែសរីរាង្គ">បន្លែសរីរាង្គ</option>
+                                <option value="ផ្លែឈើដាំដុះ">ផ្លែឈើដាំដុះ</option>
+                                <option value="គ្រាប់ពូជកសិកម្ម">គ្រាប់ពូជកសិកម្ម</option>
+                                <option value="ជី និងថ្នាំកសិកម្ម">ជី និងថ្នាំកសិកម្ម</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold small text-secondary">ខ្នាត/ឯកតា</label>
+                            <input type="text" asp-for="EditProduct.Unit" id="edit-unit" class="form-control rounded-3" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">ប្រភេទតម្លៃលក់</label>
+                        <div class="d-flex gap-4 p-2 bg-light rounded-3 border">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="EditPriceType" id="editNormalPrice" value="normal" onchange="togglePriceFields('edit')">
+                                <label class="form-check-label fw-semibold text-dark small" for="editNormalPrice">
+                                    <i class="bi bi-tag-fill text-primary me-1"></i> លក់តម្លៃធម្មតា
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="EditPriceType" id="editDiscountPrice" value="discount" onchange="togglePriceFields('edit')">
+                                <label class="form-check-label fw-semibold text-danger small" for="editDiscountPrice">
+                                    <i class="bi bi-lightning-charge-fill text-warning me-1"></i> មានការបញ្ចុះតម្លៃ
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold small text-secondary" id="edit-price-label">តម្លៃលក់ទូទៅ (រៀល)</label>
+                            <input type="number" asp-for="EditProduct.Price" id="edit-price" class="form-control rounded-3" required />
+                        </div>
+                        <div class="col-md-6 mb-3" id="edit-original-box" style="display: none;">
+                            <label class="form-label fw-bold small text-danger">តម្លៃដើម មុនចុះថ្លៃ (រៀល) <span class="text-danger">*</span></label>
+                            <input type="number" asp-for="EditProduct.OriginalPrice" id="edit-originalprice" class="form-control rounded-3" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">ការពិពណ៌នា</label>
+                        <textarea asp-for="EditProduct.Description" id="edit-desc" class="form-control rounded-3" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="mb-3 p-3 bg-light rounded-3 border">
+                        <label class="form-label fw-bold small text-primary d-block mb-2"><i class="bi bi-image me-1"></i> កែប្រែរូបភាពផលិតផល</label>
+                        <div class="mb-2">
+                            <input type="url" name="EditImageUrlLink" id="edit-url-link" class="form-control form-control-sm rounded-2" placeholder="ប្ដូរតាមតំណភ្ជាប់ URL (https://...)" oninput="previewFromUrl(this.value, 'edit-preview')" />
+                        </div>
+                        <div class="text-center my-1 small text-muted">— ឬ —</div>
+                        <div>
+                            <input type="file" name="EditUploadImage" class="form-control form-control-sm rounded-2" accept="image/*" onchange="previewImage(event, 'edit-preview')" />
+                        </div>
+                        <div class="mt-3 text-center">
+                            <img id="edit-preview" src="" class="img-thumbnail rounded-3" style="max-height: 120px; object-fit: cover;">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">បោះបង់</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">ធ្វើបច្ចុប្បន្នភាព</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteProductModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-body text-center p-4">
+                <i class="bi bi-exclamation-circle text-danger display-4 d-block mb-3"></i>
+                <h5 class="fw-bold text-dark">តើអ្នកពិតជាចង់លុប?</h5>
+                <p class="text-muted small mb-4">ផលិតផលឈ្មោះ «<span id="delete-product-name" class="fw-bold text-danger"></span>» នឹងត្រូវលុបចោលពីប្រព័ន្ធលក់ទំនិញ。</p>
+                
+                <form method="post" asp-page-handler="DeleteProduct">
+                    <input type="hidden" name="id" id="delete-id" />
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">បោះបង់</button>
+                        <button type="submit" class="btn btn-danger rounded-pill px-3">យល់ព្រមលុប</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // 🟢 មុខងារលាក់/បង្ហាញ ប្រអប់បញ្ចូលតម្លៃដើមតាម Option ជ្រើសរើស
+        function togglePriceFields(prefix) {
+            const isDiscount = document.getElementById(prefix === 'create' ? 'createDiscountPrice' : 'editDiscountPrice').checked;
+            const originalBox = document.getElementById(prefix === 'create' ? 'create-original-box' : 'edit-original-box');
+            const originalInput = document.getElementById(prefix === 'create' ? 'create-original-input' : 'edit-originalprice');
+            const priceLabel = document.getElementById(prefix === 'create' ? 'create-price-label' : 'edit-price-label');
+
+            if (isDiscount) {
+                originalBox.style.display = 'block';
+                originalInput.setAttribute('required', 'required');
+                priceLabel.innerHTML = 'តម្លៃលក់ថ្មី (ក្រោយចុះថ្លៃ) <span class="text-danger">*</span>';
+            } else {
+                originalBox.style.display = 'none';
+                originalInput.removeAttribute('required');
+                originalInput.value = ''; // សម្អាតតម្លៃចោលបើលក់ធម្មតា
+                priceLabel.innerHTML = 'តម្លៃលក់ទូទៅ (រៀល) <span class="text-danger">*</span>';
+            }
+        }
+
+        function previewImage(event, previewId) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                document.getElementById(previewId).src = reader.result;
+            };
+            if (event.target.files[0]) { reader.readAsDataURL(event.target.files[0]); }
+        }
+
+        function previewFromUrl(url, previewId) {
+            var output = document.getElementById(previewId);
+            output.src = url.trim() !== "" ? url : "https://placehold.co/150x100?text=Preview";
+        }
+
+        function openEditModal(id) {
+            document.getElementById('edit-id').value = id;
+            document.getElementById('edit-name').value = document.getElementById('name-' + id).innerText;
+            
+            // បន្ថែមការ Check មុននឹងយកតម្លៃ
+            var descElem = document.getElementById('desc-' + id);
+            document.getElementById('edit-desc').value = descElem ? descElem.innerText : "";
+            
+            document.getElementById('edit-category').value = document.getElementById('cat-' + id).innerText;
+            document.getElementById('edit-unit').value = document.getElementById('unit-' + id).innerText;
+            
+            // សម្អាតតម្លៃលក់ចេញពីសញ្ញាក្បៀស
+            let rawPrice = document.getElementById('price-' + id).innerText;
+            let cleanPrice = rawPrice.replace(/,/g, '').split('.')[0]; 
+            const currentPrice = parseInt(cleanPrice) || 0;
+            document.getElementById('edit-price').value = currentPrice;
+            
+            // ឆែកមើលតម្លៃដើម
+            var origPriceElem = document.getElementById('orig-price-' + id);
+            let originalPriceValue = 0;
+            if (origPriceElem && origPriceElem.innerText.trim() !== "-") {
+                let rawOrigPrice = origPriceElem.innerText;
+                let cleanOrigPrice = rawOrigPrice.replace(/,/g, '').split('.')[0];
+                originalPriceValue = parseInt(cleanOrigPrice) || 0;
+            }
+
+            // គណនាតម្លៃ Auto 1.15
+            const calculatedAutoPrice = Math.round(currentPrice * 1.15);
+            
+            if (originalPriceValue > 0 && Math.abs(originalPriceValue - calculatedAutoPrice) > 5) {
+                document.getElementById('editDiscountPrice').checked = true;
+                document.getElementById('edit-originalprice').value = originalPriceValue;
+            } else {
+                document.getElementById('editNormalPrice').checked = true;
+                document.getElementById('edit-originalprice').value = '';
+            }
+            
+            togglePriceFields('edit');
+
+            var currentImgSrc = document.getElementById('img-' + id).src;
+            document.getElementById('edit-preview').src = currentImgSrc;
+
+            if (currentImgSrc && !currentImgSrc.includes("placehold.co")) {
+                document.getElementById('edit-url-link').value = currentImgSrc;
+            } else { 
+                document.getElementById('edit-url-link').value = ""; 
+            }
+
+            new bootstrap.Modal(document.getElementById('editProductModal')).show();
+        }
+
+        function openDeleteModal(id, name) {
+            document.getElementById('delete-id').value = id;
+            document.getElementById('delete-product-name').innerText = name;
+            new bootstrap.Modal(document.getElementById('deleteProductModal')).show();
+        }
+    </script>
+}
+
+<style>
+    .truncate-text {
+        width: 150px; /* កំណត់ប្រវែងតាមចិត្ត */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+    .bg-success-subtle { background-color: #e8f5e9; color: #198754; }
+    .table th { font-size: 0.8rem; letter-spacing: 0.5px; }
+</style>

@@ -1,0 +1,231 @@
+@page
+@model PhumKasikam.Pages.Admin.Customers.IndexModel
+@{
+    ViewData["Title"] = "គ្រប់គ្រងការកម្ម៉ង់ - Admin";
+    Layout = "_AdminLayout";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-dark mb-0"><i class="bi bi-shield-lock-fill text-success"></i> ប្រព័ន្ធគ្រប់គ្រងការកម្ម៉ង់ និងអតិថិជន</h2>
+    <div class="d-flex gap-2">
+        <span class="badge bg-success text-white rounded-pill px-3 py-2 fw-bold small shadow-sm">
+            <i class="bi bi-cart-check-fill me-1"></i> ការកម្ម៉ង់សរុប៖ @Model.CustomerOrders.Count
+        </span>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 bg-white">
+            <thead class="table-light text-secondary uppercase small fw-bold">
+                <tr>
+                    <th class="ps-4">អតិថិជន</th>
+                    <th>ព័ត៌មានទំនាក់ទំនង</th>
+                    <th>តំបន់រស់នៅ</th>
+                    <th>អាសយដ្ឋានលម្អិត</th>
+                    <th>សេវាដឹកជញ្ជូន</th>
+                    <th>សាខា/បញ្ជរ</th>
+                    <th class="text-center">វិក្កយបត្រ (Payslip)</th>
+                    <th>កាលបរិច្ឆេទ</th>
+                    <th class="text-center">ស្ថានភាព</th>
+                    <th class="text-end pe-4">សកម្មភាព</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.CustomerOrders != null && Model.CustomerOrders.Any())
+                {
+                    foreach (var item in Model.CustomerOrders)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <div class="fw-bold text-dark" id="name-@item.Id">@item.Name</div>
+                            </td>
+                            
+                            <td>
+                                <div class="fw-bold text-success"><i class="bi bi-telephone me-1"></i>@item.Phone</div>
+                                @if (!string.IsNullOrEmpty(item.Email))
+                                {
+                                    <div class="text-muted small"><i class="bi bi-envelope me-1"></i>@item.Email</div>
+                                }
+                            </td>
+                            
+                            <td>
+                                <span class="badge @(item.Region == "phnompenh" ? "bg-primary-subtle text-primary" : "bg-warning-subtle text-warning") rounded-pill px-3 py-2 fw-bold">
+                                    @(item.Region == "phnompenh" ? "ភ្នំពេញ" : "តាមខេត្ត")
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="truncate-text text-muted" title="@item.Location">@item.Location</div>
+                                <span id="loc-@item.Id" style="display:none;">@item.Location</span>
+                            </td>
+                            
+                            <td>
+                                <span class="badge bg-info-subtle text-info rounded-pill px-2 py-1 small">
+                                    <i class="bi bi-truck me-1"></i>@item.DeliveryService
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="text-dark small fw-semibold">@(string.IsNullOrEmpty(item.BranchName) ? "—" : item.BranchName)</div>
+                            </td>
+                            
+                            <td class="text-center">
+                                @if (!string.IsNullOrEmpty(item.PayslipPath))
+                                {
+                                    <img src="@item.PayslipPath" id="img-@item.Id" class="rounded-3 object-fit-cover border cursor-pointer img-preview-hover" 
+                                         style="width: 45px; height: 45px;" 
+                                         onclick="openPayslipModal('@item.PayslipPath', '@item.Name')"
+                                         title="ចុចដើម្បីពិនិត្យមើលវិក្កយបត្រពេញ">
+                                }
+                                else
+                                {
+                                    <span class="text-danger small"><i class="bi bi-exclamation-triangle"></i> គ្មានរូបភាព</span>
+                                }
+                            </td>
+                            
+                            <td>
+                                <div class="text-muted small">@item.OrderDate.ToString("dd-MM-yyyy HH:mm")</div>
+                            </td>
+                            
+                            <td class="text-center">
+                                @if (item.Status == "Pending")
+                                {
+                                    <span class="badge bg-warning text-dark rounded-pill px-2.5 py-1 small"><i class="bi bi-hourglass-split me-1"></i>រង់ចាំពិនិត្យ</span>
+                                }
+                                else if (item.Status == "Approved")
+                                {
+                                    <span class="badge bg-success text-white rounded-pill px-2.5 py-1 small"><i class="bi bi-check-circle me-1"></i>បានយល់ព្រម</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger text-white rounded-pill px-2.5 py-1 small"><i class="bi bi-x-circle me-1"></i>បានបដិសេធ</span>
+                                }
+                            </td>
+                            
+                            <td class="text-end pe-4">
+                                <div class="d-flex justify-content-end gap-1">
+                                    @if (item.Status == "Pending")
+                                    {
+                                        <button type="button" class="btn btn-sm btn-light text-success rounded-circle" onclick="openActionModal(@item.Id, '@item.Name', 'Approved')" title="យល់ព្រមលើការកម្ម៉ង់">
+                                            <i class="bi bi-check-lg fw-bold"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-light text-danger rounded-circle" onclick="openActionModal(@item.Id, '@item.Name', 'Rejected')" title="បដិសេធការកម្ម៉ង់">
+                                            <i class="bi bi-x-lg fw-bold"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-sm btn-light text-secondary rounded-pill px-2.5 disabled" style="font-size: 0.75rem;">រួចរាល់</button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="10" class="text-center py-5 text-muted">
+                            <i class="bi bi-inbox display-4 d-block opacity-25 mb-2"></i>
+                            មិនទាន់មានទិន្នន័យការកម្ម៉ង់ពីអតិថិជននៅឡើយទេ។
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="payslipModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold text-dark" id="payslipModalTitle">វិក្កយបត្របង់ប្រាក់</h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center p-3">
+                <img id="fullPayslipImg" src="" class="img-fluid rounded-3 border shadow-sm" style="max-height: 70vh; object-fit: contain;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="orderActionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-body text-center p-4">
+                <i id="action-icon" class="display-4 d-block mb-3"></i>
+                <h5 class="fw-bold text-dark" id="action-title">បញ្ជាក់សកម្មភាព</h5>
+                <p class="text-muted small mb-4">តើអ្នកពិតជាចង់ផ្លាស់ប្ដូរស្ថានភាពការកម្ម៉ង់របស់ «<span id="action-customer-name" class="fw-bold"></span>» មែនដែរឬទេ?</p>
+                
+                <form method="post" asp-page-handler="UpdateStatus">
+                    <input type="hidden" name="id" id="action-id" />
+                    <input type="hidden" name="status" id="action-status" />
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">បោះបង់</button>
+                        <button type="submit" id="action-submit-btn" class="btn rounded-pill px-3">យល់ព្រម</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // មុខងារបើកមើលរូបភាពចុងសន្លឹកបង់ប្រាក់ទំហំពេញ
+        function openPayslipModal(path, name) {
+            document.getElementById('fullPayslipImg').src = path;
+            document.getElementById('payslipModalTitle').innerText = "វិក្កយបត្របង់ប្រាក់៖ " + name;
+            new bootstrap.Modal(document.getElementById('payslipModal')).show();
+        }
+
+        // មុខងារបើកផ្ទាំងយល់ព្រម/បដិសេធការកម្ម៉ង់ (ផ្អែកលើប៊ូតង់ដែលបានចុច)
+        function openActionModal(id, customerName, status) {
+            document.getElementById('action-id').value = id;
+            document.getElementById('action-status').value = status;
+            document.getElementById('action-customer-name').innerText = customerName;
+
+            const iconElem = document.getElementById('action-icon');
+            const titleElem = document.getElementById('action-title');
+            const submitBtn = document.getElementById('action-submit-btn');
+
+            if (status === 'Approved') {
+                iconElem.className = "bi bi-check-circle-fill text-success display-4 d-block mb-3";
+                titleElem.innerText = "យល់ព្រមលើការកម្ម៉ង់?";
+                customerName.className = "fw-bold text-success";
+                submitBtn.className = "btn btn-success rounded-pill px-3";
+                submitBtn.innerText = "យល់ព្រម";
+            } else {
+                iconElem.className = "bi bi-exclamation-circle-fill text-danger display-4 d-block mb-3";
+                titleElem.innerText = "បដិសេធការកម្ម៉ង់?";
+                customerName.className = "fw-bold text-danger";
+                submitBtn.className = "btn btn-danger rounded-pill px-3";
+                submitBtn.innerText = "បដិសេធ";
+            }
+
+            new bootstrap.Modal(document.getElementById('orderActionModal')).show();
+        }
+    </script>
+}
+
+<style>
+    .truncate-text {
+        width: 160px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+    .bg-primary-subtle { background-color: #e3f2fd; color: #0d6efd; }
+    .bg-warning-subtle { background-color: #fff3cd; color: #664d03; }
+    .bg-success-subtle { background-color: #e8f5e9; color: #198754; }
+    .bg-info-subtle { background-color: #e0f7fa; color: #00838f; }
+    .table th { font-size: 0.8rem; letter-spacing: 0.5px; }
+    .cursor-pointer { cursor: pointer; }
+    .img-preview-hover { transition: transform 0.2s ease-in-out; }
+    .img-preview-hover:hover { transform: scale(1.1); }
+</style>

@@ -1,0 +1,107 @@
+/* PhumKasikam - Custom Site Styles
+   Developed by Noy Vathana
+*/
+
+/* ១. ការកំណត់ទូទៅ (Global Styles) */
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+main {
+    padding-bottom: 3rem; 
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: 'Kantumruy Pro', sans-serif;
+    background-color: #f8f9fa;
+    margin-bottom: 0; /* ដកចេញដើម្បីប្រើ Sticky Footer តាមរយៈ Flexbox ក្នុង Layout */
+}
+
+/* ២. ការកំណត់ Link និង Buttons */
+a {
+    color: #1b5e20;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+a:hover {
+    color: #2e7d32;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b5e20;
+    border-color: #1b5e20;
+}
+
+.btn-primary:hover {
+    background-color: #146c43;
+    border-color: #146c43;
+}
+
+/* ៣. ការកំណត់ Navbar */
+.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #1b5e20;
+    border-color: #1b5e20;
+}
+
+/* ៤. Utilities */
+.border-top {
+    border-top: 1px solid #e5e5e5;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+}
+
+/* ៥. ការកំណត់ Footer (កែសម្រួលដើម្បីបាត់ផ្ទៃពណ៌ស) */
+.footer {
+    width: 100%;
+    white-space: nowrap;
+    padding-top: 20px;
+    /* ឈប់ប្រើ position: absolute; ដើម្បីឱ្យវាដើរតាម Flexbox ក្នុង _Layout.cshtml */
+}
+
+/* ៦. បន្ថែម Hover Effect សម្រាប់ Footer Links */
+.hover-link:hover {
+    color: #28a745 !important;
+    padding-left: 8px;
+    transition: 0.3s;
+}
+
+/* ៧. ការកំណត់រូបភាព Card ឱ្យស្អាត */
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: calc(0.25rem - 1px);
+    border-top-right-radius: calc(0.25rem - 1px);
+}
+.container.py-5 {
+    padding-top: 3rem !important;
+    padding-bottom: 5rem !important;
+}

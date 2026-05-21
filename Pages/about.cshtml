@@ -1,0 +1,198 @@
+@page
+@model PhumKasikam.Pages.AboutModel
+@{
+    ViewData["Title"] = "អំពីយើង";
+}
+
+<!-- AOS Library for Scroll Animation -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+<!-- Header Section with Decorative Pattern -->
+<div class="about-header position-relative overflow-hidden py-5 mt-5">
+    <div class="container position-relative z-index-2">
+        <div class="text-center p-5 bg-white bg-opacity-75 rounded-5 shadow-sm border-bottom border-success border-5 blur-bg" data-aos="zoom-in">
+            <h1 class="display-3 text-success fw-bold mb-0">ភូមិកសិកម្ម</h1>
+            <h4 class="text-dark fw-light mb-4">Phum Kasikam</h4>
+            <p class="lead mt-3 fs-3 fw-bold text-dark italic-text">"បច្ចេកវិទ្យាដើម្បីនិរន្តរភាពកសិករខ្មែរ"</p>
+            <div class="d-flex justify-content-center">
+                <hr class="my-4 opacity-100 rounded-pill" style="width: 120px; height: 6px; background-color: #198754; border: none;">
+            </div>
+            <p class="mx-auto text-muted fs-5 lh-lg" style="max-width: 850px;">
+                យើងគឺជាវេទិកាឌីជីថលឈានមុខគេ ដែលផ្តល់នូវចំណេះដឹងបច្ចេកទេសកសិកម្មទំនើប និងការតភ្ជាប់បណ្តាញទីផ្សារដោយផ្ទាល់ 
+                ដើម្បីជួយឱ្យកសិករខ្មែរទទួលបានទិន្នផលខ្ពស់ និងជីវភាពប្រសើរឡើងតាមរយៈការប្រើប្រាស់បច្ចេកវិទ្យា។
+            </p>
+        </div>
+    </div>
+    <div class="header-pattern"></div>
+</div>
+
+<!-- Vision & Mission Section -->
+<div class="container mt-5">
+    <div class="row g-4">
+        <div class="col-md-6" data-aos="fade-right">
+            <div class="card h-100 border-0 shadow-lg p-4 rounded-5 bg-success text-white vision-card">
+                <div class="card-body">
+                    <div class="icon-box mb-4">
+                        <i class="bi bi-eye-fill display-4"></i>
+                    </div>
+                    <h2 class="fw-bold mb-3">ចក្ខុវិស័យ</h2>
+                    <p class="fs-5 opacity-90">ក្លាយជាប្រភពទិន្នន័យ និងទីផ្សារកសិកម្មឌីជីថលដ៏ធំបំផុតនៅក្នុងប្រទេសកម្ពុជា ដែលជួយលើកកម្ពស់សេដ្ឋកិច្ចជាតិ និងកិត្យានុភាពកសិផលខ្មែរ។</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6" data-aos="fade-left">
+            <div class="card h-100 border-0 shadow-lg p-4 rounded-5 bg-white mission-card">
+                <div class="card-body text-dark">
+                    <div class="icon-box mb-4 text-success">
+                        <i class="bi bi-bullseye display-4"></i>
+                    </div>
+                    <h2 class="fw-bold mb-3 text-success">បេសកកម្ម</h2>
+                    <p class="fs-5 text-muted">ចែកចាយចំណេះដឹង បច្ចេកទេសដាំដុះ តាមដានតម្លៃទីផ្សារ និងបង្កើតឱកាសពាណិជ្ជកម្មប្រកបដោយតម្លាភាពសម្រាប់កសិករគ្រប់រូប។</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Counter Section -->
+<div class="container mt-5 py-5 text-center">
+    <div class="row g-4" data-aos="fade-up">
+        <div class="col-6 col-md-3">
+            <h2 class="fw-bold text-success display-5">1K+</h2>
+            <p class="text-muted">កសិករចូលរួម</p>
+        </div>
+        <div class="col-6 col-md-3">
+            <h2 class="fw-bold text-success display-5">500+</h2>
+            <p class="text-muted">អត្ថបទបច្ចេកទេស</p>
+        </div>
+        <div class="col-6 col-md-3">
+            <h2 class="fw-bold text-success display-5">50+</h2>
+            <p class="text-muted">ដៃគូសហការ</p>
+        </div>
+        <div class="col-6 col-md-3">
+            <h2 class="fw-bold text-success display-5">25+</h2>
+            <p class="text-muted">ខេត្ត-ក្រុង</p>
+        </div>
+    </div>
+</div>
+
+<!-- Team Members Section -->
+<div class="container my-5 py-5">
+    <div class="text-center mb-5" data-aos="fade-up">
+        <h2 class="fw-bold display-6">ក្រុមការងារយើង</h2>
+        <p class="text-muted fs-5">អ្នកនៅពីក្រោយការបង្កើតប្រព័ន្ធ ភូមិកសិកម្ម</p>
+    </div>
+
+    <div class="row g-5 justify-content-center">
+        <!-- Founder (Noy Vathana) -->
+        <div class="col-lg-4 col-md-6" data-aos="flip-left">
+            <div class="team-card text-center p-5 bg-white shadow rounded-5 border-0 h-100">
+                <div class="img-wrapper mb-4">
+                    <img src="https://ui-avatars.com/api/?name=Noy+Vathana&background=198754&color=fff&size=200" 
+                         class="rounded-circle shadow-lg main-founder-img" alt="Noy Vathana">
+                </div>
+                <h4 class="fw-bold mb-1">ណយ វឌ្ឍនា</h4>
+                <p class="text-success fw-bold text-uppercase small ls-2 mb-3">Founder & Lead Developer</p>
+                <div class="social-links d-flex justify-content-center gap-3">
+                    <a href="#" class="social-btn"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="social-btn"><i class="bi bi-telegram"></i></a>
+                    <a href="#" class="social-btn"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add more members here with same structure -->
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-green: #198754;
+        --soft-green: #e8f5e9;
+    }
+
+    .about-header {
+        background-color: #f8f9fa;
+        min-height: 400px;
+        display: flex;
+        align-items: center;
+    }
+
+    .header-pattern {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background-image: radial-gradient(var(--primary-green) 0.5px, transparent 0.5px);
+        background-size: 20px 20px;
+        opacity: 0.1;
+    }
+
+    .blur-bg {
+        backdrop-filter: blur(10px);
+    }
+
+    .vision-card {
+        transition: all 0.4s ease;
+        background: linear-gradient(135deg, #198754 0%, #0d5233 100%);
+    }
+
+    .vision-card:hover, .mission-card:hover {
+        transform: scale(1.03);
+    }
+
+    .ls-2 { letter-spacing: 2px; }
+
+    /* Team Card Styling */
+    .team-card {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .team-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.1) !important;
+    }
+
+    .img-wrapper img {
+        width: 150px;
+        height: 150px;
+        border: 5px solid white;
+        transition: all 0.4s ease;
+    }
+
+    .team-card:hover .img-wrapper img {
+        border-color: var(--primary-green);
+        transform: rotate(5deg);
+    }
+
+    .social-btn {
+        width: 40px;
+        height: 40px;
+        background: var(--soft-green);
+        color: var(--primary-green);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .social-btn:hover {
+        background: var(--primary-green);
+        color: white;
+    }
+
+    @@media (max-width: 768px) {
+        .display-3 { font-size: 2.5rem; }
+    }
+</style>
+
+<!-- AOS Script -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        AOS.init({
+            duration: 1000,
+            once: true
+        });
+    });
+</script>

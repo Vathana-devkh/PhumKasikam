@@ -1,0 +1,274 @@
+@page
+@model PhumKasikam.Pages.Admin.Crops.IndexModel
+@{
+    ViewData["Title"] = "គ្រប់គ្រងទិន្នន័យដំណាំ";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-dark mb-0"><i class="bi bi-flower1 text-success"></i> គ្រប់គ្រងផលិតផលដំណាំ</h2>
+    <button type="button" class="btn btn-success rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#createCropModal">
+        <i class="bi bi-plus-circle-fill me-2"></i> បន្ថែមដំណាំថ្មី
+    </button>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 bg-white">
+            <thead class="table-light text-secondary uppercase small fw-bold">
+                <tr>
+                    <th class="ps-4" style="width: 100px;">រូបភាព</th>
+                    <th>ឈ្មោះដំណាំ</th>
+                    <th>ប្រភេទដំណាំ</th>
+                    <th>ការពិពណ៌នា</th>
+                    <th class="text-end pe-4" style="width: 140px;">សកម្មភាព</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.CropsList != null && Model.CropsList.Any())
+                {
+                    foreach (var item in Model.CropsList)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                @if (!string.IsNullOrEmpty(item.ImageUrl) && (item.ImageUrl.StartsWith("http://") || item.ImageUrl.StartsWith("https://")))
+                                {
+                                    <img src="@item.ImageUrl" id="img-@item.Id" class="rounded-3 object-fit-cover" style="width: 60px; height: 60px;" alt="">
+                                }
+                                else
+                                {
+                                    <img src="@Url.Content("~" + item.ImageUrl)" id="img-@item.Id" class="rounded-3 object-fit-cover" style="width: 60px; height: 60px;" alt="">
+                                }
+                            </td>
+                            <td>
+                                <span class="fw-bold text-dark" id="name-@item.Id">@item.Name</span>
+                            </td>
+                            <td>
+                                <span class="badge @(item.CategoryId == 1 ? "bg-success-subtle text-success" : item.CategoryId == 2 ? "bg-warning-subtle text-warning" : "bg-info-subtle text-info") px-3 py-2 rounded-pill fw-bold" id="cat-badge-@item.Id">
+                                    @(item.CategoryId == 1 ? "បន្លែសរីរាង្គ" : item.CategoryId == 2 ? "ផ្លែឈើដាំដុះ" : "គ្រាប់ពូជកសិកម្ម")
+                                </span>
+                                <input type="hidden" id="cat-id-@item.Id" value="@item.CategoryId" />
+                            </td>
+                            <td>
+                                <p class="text-muted small mb-0 text-truncate" style="max-width: 300px;" id="desc-@item.Id">@item.Description</p>
+                            </td>
+                            <td class="text-end pe-4">
+                                <button class="btn btn-sm btn-light text-primary rounded-circle me-1" onclick="openEditModal(@item.Id)" title="កែប្រែ">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                                <button class="btn btn-sm btn-light text-danger rounded-circle" onclick="openDeleteModal(@item.Id, '@item.Name')" title="លុប">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">មិនទាន់មានទិន្នន័យដំណាំនៅក្នុងប្រព័ន្ធឡើយ។</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="createCropModal" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header bg-success text-white rounded-top-4 py-3">
+                <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle me-2"></i>បន្ថែមផលិតផលដំណាំថ្មី</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" asp-page-handler="CreateCrop" enctype="multipart/form-data">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">ឈ្មោះដំណាំ</label>
+                        <input type="text" asp-for="NewCrop.Name" class="form-control rounded-3" placeholder="បញ្ចូលឈ្មោះដំណាំ..." required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">ជ្រើសរើសប្រភេទដំណាំ</label>
+                        <select asp-for="NewCrop.CategoryId" class="form-select rounded-3" required>
+                            <option value="1">បន្លែសរីរាង្គ</option>
+                            <option value="2">ផ្លែឈើដាំដុះ</option>
+                            <option value="3">គ្រាប់ពូជកសិកម្ម</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">ការពិពណ៌នា</label>
+                        <textarea asp-for="NewCrop.Description" class="form-control rounded-3" rows="3" placeholder="ព័ត៌មានរៀបរាប់ពីដំណាំ..."></textarea>
+                    </div>
+                    
+                    <div class="mb-3 p-3 bg-light rounded-3 border">
+                        <label class="form-label fw-bold small text-success d-block mb-2"><i class="bi bi-image me-1"></i> ប្រភពរូបភាពផលិតផល</label>
+                        
+                        <div class="mb-2">
+                            <span class="text-muted d-block mb-1" style="font-size: 0.75rem;">ជម្រើសទី ១៖ ដាក់តំណភ្ជាប់រូបភាព (Image URL)</span>
+                            <input type="url" name="ImageUrlLink" id="create-url-link" class="form-control form-control-sm rounded-2" placeholder="https://example.com/image.jpg" oninput="previewFromUrl(this.value, 'create-preview')" />
+                        </div>
+
+                        <div class="text-center my-2 small text-muted">— ឬ —</div>
+
+                        <div>
+                            <span class="text-muted d-block mb-1" style="font-size: 0.75rem;">ជម្រើសទី ២៖ បង្ហោះហ្វាយរូបភាពផ្ទាល់</span>
+                            <input type="file" name="UploadImage" class="form-control form-control-sm rounded-2" accept="image/*" onchange="previewImage(event, 'create-preview')" />
+                        </div>
+
+                        <div class="mt-3 text-center">
+                            <img id="create-preview" src="https://placehold.co/150x100" class="img-thumbnail rounded-3 shadow-sm" style="max-height: 120px; min-width: 150px; object-fit: cover;">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">បោះបង់</button>
+                    <button type="submit" class="btn btn-success rounded-pill px-4">រក្សាទុក</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editCropModal" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header bg-primary text-white rounded-top-4 py-3">
+                <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2"></i>កែប្រែព័ត៌មានដំណាំ</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" asp-page-handler="EditCrop" enctype="multipart/form-data">
+                <input type="hidden" asp-for="EditCrop.Id" id="edit-id" />
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">ឈ្មោះដំណាំ</label>
+                        <input type="text" asp-for="EditCrop.Name" id="edit-name" class="form-control rounded-3" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">ប្រភេទដំណាំ</label>
+                        <select asp-for="EditCrop.CategoryId" id="edit-category" class="form-select rounded-3" required>
+                            <option value="1">បន្លែសរីរាង្គ</option>
+                            <option value="2">ផ្លែឈើដាំដុះ</option>
+                            <option value="3">គ្រាប់ពូជកសិកម្ម</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-secondary">ការពិពណ៌នា</label>
+                        <textarea asp-for="EditCrop.Description" id="edit-desc" class="form-control rounded-3" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="mb-3 p-3 bg-light rounded-3 border">
+                        <label class="form-label fw-bold small text-primary d-block mb-2"><i class="bi bi-image me-1"></i> កែប្រែរូបភាពផលិតផល</label>
+                        
+                        <div class="mb-2">
+                            <span class="text-muted d-block mb-1" style="font-size: 0.75rem;">ប្ដូរតាមតំណភ្ជាប់រូបភាព (Image URL)</span>
+                            <input type="url" name="EditImageUrlLink" id="edit-url-link" class="form-control form-control-sm rounded-2" placeholder="https://example.com/image.jpg" oninput="previewFromUrl(this.value, 'edit-preview')" />
+                        </div>
+
+                        <div class="text-center my-2 small text-muted">— ឬ —</div>
+
+                        <div>
+                            <span class="text-muted d-block mb-1" style="font-size: 0.75rem;">ប្ដូរដោយបង្ហោះហ្វាយរូបភាពថ្មី</span>
+                            <input type="file" name="EditUploadImage" class="form-control form-control-sm rounded-2" accept="image/*" onchange="previewImage(event, 'edit-preview')" />
+                        </div>
+
+                        <div class="mt-3 text-center">
+                            <img id="edit-preview" src="" class="img-thumbnail rounded-3 shadow-sm" style="max-height: 120px; min-width: 150px; object-fit: cover;">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">បោះបង់</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">ធ្វើបច្ចុប្បន្នភាព</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteCropModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-body text-center p-4">
+                <i class="bi bi-exclamation-circle text-danger display-4 d-block mb-3"></i>
+                <h5 class="fw-bold text-dark">តើអ្នកពិតជាចង់លុប?</h5>
+                <p class="text-muted small mb-4">ដំណាំឈ្មោះ «<span id="delete-crop-name" class="fw-bold text-danger"></span>» នឹងត្រូវលុបបាត់ចោលពីប្រព័ន្ធ។</p>
+                
+                <form method="post" asp-page-handler="DeleteCrop">
+                    <input type="hidden" name="id" id="delete-id" />
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">បោះបង់</button>
+                        <button type="submit" class="btn btn-danger rounded-pill px-3">យល់ព្រមលុប</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // ១. Preview រូបភាពពីហ្វាយដែលជ្រើសរើសក្នុងម៉ាស៊ីន (Upload File)
+        function previewImage(event, previewId) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById(previewId);
+                output.src = reader.result;
+            };
+            if (event.target.files[0]) { 
+                reader.readAsDataURL(event.target.files[0]); 
+            }
+        }
+
+        // 🟢 ២. មុខងារថ្មី៖ Preview រូបភាពភ្លាមៗពេលផាស Link (Copy Image Address)
+        function previewFromUrl(url, previewId) {
+            var output = document.getElementById(previewId);
+            if (url.trim() !== "") {
+                output.src = url;
+            } else {
+                if(previewId === 'create-preview') {
+                    output.src = "https://placehold.co/150x100";
+                }
+            }
+        }
+
+        // ៣. បើកផ្ទាំង Edit Modal និងទាញទិន្នន័យចាស់មកបំពេញចូលប្រអប់
+        function openEditModal(id) {
+            document.getElementById('edit-id').value = id;
+            document.getElementById('edit-name').value = document.getElementById('name-' + id).innerText;
+            document.getElementById('edit-desc').value = document.getElementById('desc-' + id).innerText;
+            document.getElementById('edit-category').value = document.getElementById('cat-id-' + id).value;
+            
+            var currentImgSrc = document.getElementById('img-' + id).src;
+            document.getElementById('edit-preview').src = currentImgSrc;
+
+            // ប្រសិនបើរូបចាស់ជា Link មកពីវេបសាយក្រៅ (http) ឱ្យបង្ហាញក្នុងប្រអប់ URL តែបើជារូបក្នុង Server ទុកឱ្យទំនេរ
+            if (currentImgSrc.startsWith('http://') || currentImgSrc.startsWith('https://')) {
+                if (!currentImgSrc.includes(window.location.host)) {
+                    document.getElementById('edit-url-link').value = currentImgSrc;
+                } else {
+                    document.getElementById('edit-url-link').value = "";
+                }
+            } else {
+                document.getElementById('edit-url-link').value = "";
+            }
+
+            var editModal = new bootstrap.Modal(document.getElementById('editCropModal'));
+            editModal.show();
+        }
+
+        // ៤. បើកផ្ទាំងលុប
+        function openDeleteModal(id, name) {
+            document.getElementById('delete-id').value = id;
+            document.getElementById('delete-crop-name').innerText = name;
+
+            var deleteModal = new bootstrap.Modal(document.getElementById('deleteCropModal'));
+            deleteModal.show();
+        }
+    </script>
+}
+
+<style>
+    .bg-success-subtle { background-color: #e8f5e9; color: #198754; }
+    .bg-warning-subtle { background-color: #fff3cd; color: #ffc107; }
+    .bg-info-subtle { background-color: #cff4fc; color: #0dcaf0; }
+</style>

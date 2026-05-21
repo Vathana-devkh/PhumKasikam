@@ -1,0 +1,170 @@
+@page
+@model PhumKasikam.Pages.Crops.ShowNewModel
+@{
+    ViewData["Title"] = "បែងចែកប្រភេទដំណាំ";
+}
+
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+<div class="container mt-5 pt-4">
+    <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between mb-4 pb-3 border-bottom" data-aos="fade-down">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">
+                <i class="bi bi-flower1 text-success me-2"></i> ផលិតផលកសិកម្មតាមប្រភេទ
+            </h2>
+            <p class="text-muted small mb-0">ស្វែងរក និងទស្សនាដំណាំកសិកម្មទំនើបៗតាមប្រភេទដាំដុះច្បាស់លាស់</p>
+        </div>
+        <a asp-page="/Crops/crops" class="btn btn-light rounded-pill border-0 shadow-sm px-4 text-success fw-bold mt-3 mt-md-0 transition-back">
+            <i class="bi bi-arrow-left me-2"></i> ត្រលប់ទៅទំព័រចម្បង
+        </a>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 mb-5" data-aos="fade-up" data-aos-delay="100">
+        <a asp-page="/Crops/ShowNew" asp-route-category="ទាំងអស់" 
+           class="btn filter-tab @(Model.SelectedCategory == "ទាំងអស់" ? "active-tab" : "inactive-tab")">
+            <i class="bi bi-grid-fill me-1"></i> ទាំងអស់ 
+            <span class="badge ms-1">@Model.CropsList.Count</span>
+        </a>
+
+        <a asp-page="/Crops/ShowNew" asp-route-category="បន្លែសរីរាង្គ" 
+           class="btn filter-tab @(Model.SelectedCategory == "បន្លែសរីរាង្គ" ? "active-tab" : "inactive-tab")">
+            <i class="bi bi-egg-fried me-1"></i> បន្លែសរីរាង្គ
+        </a>
+        
+        <a asp-page="/Crops/ShowNew" asp-route-category="ផ្លែឈើដាំដុះ" 
+           class="btn filter-tab @(Model.SelectedCategory == "ផ្លែឈើដាំដុះ" ? "active-tab" : "inactive-tab")">
+            <i class="bi bi-apple me-1"></i> ផ្លែឈើដាំដុះ
+        </a>
+
+        <a asp-page="/Crops/ShowNew" asp-route-category="គ្រាប់ពូជកសិកម្ម" 
+           class="btn filter-tab @(Model.SelectedCategory == "គ្រាប់ពូជកសិកម្ម" ? "active-tab" : "inactive-tab")">
+            <i class="bi bi-moisture me-1"></i> គ្រាប់ពូជកសិកម្ម
+        </a>
+    </div>
+
+    <div class="row g-4" data-aos="fade-up" data-aos-delay="200">
+        @if (Model.CropsList != null && Model.CropsList.Any())
+        {
+            @foreach (var crop in Model.CropsList)
+            {
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <a asp-page="/Crops/DetailsNew" asp-route-id="@crop.Id" class="text-decoration-none">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden product-card bg-white position-relative">
+                            
+                            <div class="position-relative overflow-hidden" style="height: 210px;">
+                                @if (string.IsNullOrEmpty(crop.ImageUrl))
+                                {
+                                    <img src="https://placehold.co/400x300" class="w-100 h-100 object-fit-cover card-img-top" alt="@crop.Name">
+                                }
+                                else if (crop.ImageUrl.StartsWith("http://") || crop.ImageUrl.StartsWith("https://"))
+                                {
+                                    <img src="@crop.ImageUrl" class="w-100 h-100 object-fit-cover card-img-top" alt="@crop.Name">
+                                }
+                                else
+                                {
+                                    <img src="@Url.Content("~" + crop.ImageUrl)" class="w-100 h-100 object-fit-cover card-img-top" alt="@crop.Name">
+                                }
+                                
+                                <span class="position-absolute bottom-3 start-3 badge bg-dark bg-opacity-75 backdrop-blur px-3 py-2 rounded-pill small fw-normal">
+                                    @(crop.CategoryId == 1 ? "បន្លែ" : crop.CategoryId == 2 ? "ផ្លែឈើ" : "គ្រាប់ពូជ")
+                                </span>
+                            </div>
+                            
+                            <div class="card-body p-4 d-flex flex-column">
+                                <h5 class="card-title fw-bold text-dark text-line-2 mb-2 fs-5 lh-base">@crop.Name</h5>
+                                <p class="card-text text-muted small text-line-3 mb-4">@crop.Description</p>
+                                
+                                <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center text-success fw-bold small">
+                                    <span>ពិនិត្យព័ត៌មានលម្អិត</span>
+                                    <div class="arrow-circle d-flex align-items-center justify-content-center bg-success text-white rounded-circle" style="width: 28px; height: 28px;">
+                                        <i class="bi bi-arrow-right small"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5 my-4 text-muted">
+                <i class="bi bi-flower3 display-1 d-block mb-3 text-success opacity-25"></i>
+                <h5 class="fw-bold">មិនទាន់មានទិន្នន័យក្នុងប្រភេទនេះឡើយ</h5>
+                <p class="small text-muted">ក្រុមការងារនឹងធ្វើការ Update ផលិតផលក្នុងផ្នែកនេះឆាប់ៗ។</p>
+            </div>
+        }
+    </div>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        AOS.init({ duration: 800, once: true });
+    });
+</script>
+
+<style>
+    /* Category Filter Tabs Custom Design */
+    .filter-tab {
+        padding: 10px 24px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid transparent;
+    }
+    .active-tab {
+        background-color: #198754 !important;
+        color: #ffffff !important;
+        box-shadow: 0 8px 20px rgba(25, 135, 84, 0.25);
+    }
+    .active-tab .badge {
+        background-color: #ffffff;
+        color: #198754;
+    }
+    .inactive-tab {
+        background-color: #f8f9fa;
+        color: #495057;
+        border-color: rgba(0,0,0,0.05);
+    }
+    .inactive-tab:hover {
+        background-color: #e9ecef;
+        color: #212529;
+        transform: translateY(-2px);
+    }
+    .inactive-tab .badge {
+        background-color: #6c757d;
+        color: #ffffff;
+    }
+
+    /* Product Cards Upgrade */
+    .product-card {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(0, 0, 0, 0.02) !important;
+    }
+    .product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 35px rgba(0, 0, 0, 0.07) !important;
+    }
+    .arrow-circle {
+        transition: transform 0.3s ease;
+    }
+    .product-card:hover .arrow-circle {
+        transform: translateX(4px) scale(1.1);
+    }
+    .transition-back:hover {
+        transform: translateX(-3px);
+        background-color: #e8f5e9 !important;
+    }
+
+    /* Utilities */
+    .backdrop-blur {
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+    .bottom-3 { bottom: 1rem; }
+    .start-3 { start: 1rem; }
+    .text-line-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .text-line-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+</style>

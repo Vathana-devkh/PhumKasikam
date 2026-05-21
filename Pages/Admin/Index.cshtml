@@ -1,0 +1,173 @@
+@page "/Admin/Dashboard"
+@model PhumKasikam.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "ផ្ទាំងគ្រប់គ្រង (Dashboard)";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-dark mb-1">ស្វាគមន៍មកកាន់ ភូមិកសិកម្ម Admin</h2>
+        <p class="text-muted small mb-0">របាយការណ៍សង្ខេប និងស្ថិតិប្រព័ន្ធសម្រាប់ថ្ងៃនេះ</p>
+    </div>
+    <div class="text-end">
+        <span class="badge bg-white text-dark border shadow-sm px-3 py-2 rounded-3">
+            <i class="bi bi-calendar3 text-success me-2"></i> @DateTime.Now.ToString("dd MMMM yyyy")
+        </span>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border-0 shadow-sm rounded-4 stat-card bg-white p-3">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small d-block mb-1">ដំណាំសរុប</span>
+                    <h3 class="fw-bold text-dark mb-0">@Model.TotalCrops</h3>
+                </div>
+                <div class="icon-shape bg-success-subtle text-success rounded-4 p-3">
+                    <i class="bi bi-tree fs-3"></i>
+                </div>
+            </div>
+            <div class="mt-3 small text-muted">
+                <span class="text-success fw-bold"><i class="bi bi-arrow-up"></i> +១២%</span> ធៀបនឹងខែមុន
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border-0 shadow-sm rounded-4 stat-card bg-white p-3">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small d-block mb-1">អត្ថបទកសិកម្ម</span>
+                    <h3 class="fw-bold text-dark mb-0">@Model.TotalBlogs</h3>
+                </div>
+                <div class="icon-shape bg-primary-subtle text-primary rounded-4 p-3">
+                    <i class="bi bi-journal-richtext fs-3"></i>
+                </div>
+            </div>
+            <div class="mt-3 small text-muted">
+                <span class="text-primary fw-bold"><i class="bi bi-arrow-up"></i> +៥</span> អត្ថបទសប្តាហ៍នេះ
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border-0 shadow-sm rounded-4 stat-card bg-white p-3">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small d-block mb-1">កសិផលដាក់លក់</span>
+                    <h3 class="fw-bold text-dark mb-0">@Model.TotalProducts</h3>
+                </div>
+                <div class="icon-shape bg-warning-subtle text-warning rounded-4 p-3">
+                    <i class="bi bi-bag-check fs-3"></i>
+                </div>
+            </div>
+            <div class="mt-3 small text-muted">
+                <span class="text-success fw-bold"><i class="bi bi-check-circle"></i> សកម្មទាំងអស់</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border-0 shadow-sm rounded-4 stat-card bg-white p-3">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small d-block mb-1">អ្នកចូលមើលវេបសាយ</span>
+                    <h3 class="fw-bold text-dark mb-0">១.៥K</h3>
+                </div>
+                <div class="icon-shape bg-info-subtle text-info rounded-4 p-3">
+                    <i class="bi bi-people fs-3"></i>
+                </div>
+            </div>
+            <div class="mt-3 small text-muted">
+                <span class="text-danger fw-bold"><i class="bi bi-arrow-down"></i> -២%</span> ថ្ងៃនេះ
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold text-dark mb-0"><i class="bi bi-clock-history text-success me-2"></i> ដំណាំទើបបញ្ចូលថ្មីៗ</h5>
+                <a href="/Admin/Crops" class="btn btn-sm btn-light rounded-pill px-3">មើលទាំងអស់</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light small">
+                        <tr>
+                            <th>ឈ្មោះដំណាំ</th>
+                            <th>ប្រភេទ</th>
+                            <th>ស្ថានភាព</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.RecentCrops != null && Model.RecentCrops.Any())
+                        {
+                            @foreach (var crop in Model.RecentCrops)
+                            {
+                                <tr>
+                                    <td class="fw-bold text-dark">@crop.Name</td>
+                                    <td><span class="badge bg-success-subtle text-success rounded-pill px-3">@crop.Category</span></td>
+                                    <td><span class="text-success small fw-bold"><i class="bi bi-check-circle-fill"></i> បង្ហាញជាសាធារណៈ</span></td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-4">
+                                    <i class="bi bi-inbox d-block fs-3 mb-2"></i> មិនទាន់មានទិន្នន័យដំណាំថ្មីៗឡើយ
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
+            <h5 class="fw-bold text-dark mb-4"><i class="bi bi-lightning-charge text-warning me-2"></i> ផ្លូវកាត់ (Quick Actions)</h5>
+            <div class="d-grid gap-3">
+                <a href="/Admin/Crops/Create" class="btn btn-outline-success text-start rounded-3 p-3">
+                    <i class="bi bi-tree-fill me-2"></i> បន្ថែមទិន្នន័យដំណាំថ្មី
+                </a>
+                <a href="/Admin/Blog/Create" class="btn btn-outline-primary text-start rounded-3 p-3">
+                    <i class="bi bi-journal-plus me-2"></i> សរសេរអត្ថបទកសិកម្មថ្មី
+                </a>
+                <button class="btn btn-outline-dark text-start rounded-3 p-3" disabled>
+                    <i class="bi bi-gear-fill me-2"></i> ការកំណត់ប្រព័ន្ធ (Settings)
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Subtitle Background Colors for Badges */
+    .bg-success-subtle { background-color: #e8f5e9; }
+    .bg-primary-subtle { background-color: #e3f2fd; }
+    .bg-warning-subtle { background-color: #fff3e0; }
+    .bg-info-subtle { background-color: #e0f7fa; }
+
+    /* Stat Card Interactive */
+    .stat-card {
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border: 1px solid rgba(0,0,0,0.02) !important;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
+    }
+    .icon-shape {
+        width: 55px;
+        height: 55px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>

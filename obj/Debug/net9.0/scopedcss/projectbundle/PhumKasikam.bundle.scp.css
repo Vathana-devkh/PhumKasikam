@@ -1,0 +1,138 @@
+/* _content/PhumKasikam/Pages/Shared/_Layout.cshtml.rz.scp.css */
+/* PhumKasikam - Custom Site Styles
+   Developed by Noy Vathana
+*/
+
+/* ១. ការកំណត់ទូទៅ (Global Layout) */
+html[b-duukoo72sa], body[b-duukoo72sa] {
+    height: 100%;
+}
+
+body[b-duukoo72sa] {
+    font-family: 'Kantumruy Pro', sans-serif;
+    background-color: #f4f7f4; /* ពណ៌ប្រផេះស្រាលលាយបៃតងតិចៗ */
+    display: flex;
+    flex-direction: column;
+}
+
+/* ផ្នែកកណ្តាលរុញ Footer ទៅបាត (Sticky Footer Logic) */
+main[b-duukoo72sa] {
+    flex: 1 0 auto;
+}
+
+/* ២. Navbar Custom Styles */
+.navbar-custom[b-duukoo72sa] {
+    background-color: #1b5e20;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 0.8rem 1rem;
+}
+
+/* Navbar Links & Hover Effect */
+.navbar-nav .nav-link[b-duukoo72sa] {
+    position: relative;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin: 0 5px;
+}
+
+/* បន្ទាត់រត់ពីក្រោមពេល Hover */
+.navbar-nav .nav-link[b-duukoo72sa]::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 2px;
+    left: 50%;
+    background-color: #ffc107;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.navbar-nav .nav-link:hover[b-duukoo72sa]::after {
+    width: 80%;
+}
+
+.navbar-nav .nav-link:hover[b-duukoo72sa] {
+    color: #ffc107 !important;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+}
+
+/* បង្ហាញថា Link ណាដែលកំពុង Active */
+.navbar-nav .nav-link.active[b-duukoo72sa] {
+    color: #ffc107 !important;
+    background-color: rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+}
+
+.navbar-nav .nav-link.active[b-duukoo72sa]::after {
+    width: 80%;
+}
+
+/* ៣. Footer Custom Styles */
+.footer-custom[b-duukoo72sa] {
+    flex-shrink: 0;
+    width: 100%;
+    background-color: #212529;
+    color: #e0e0e0;
+    border-top: 4px solid #28a745;
+}
+
+.hover-link[b-duukoo72sa] {
+    text-decoration: none;
+    color: #adb5bd;
+    transition: 0.3s;
+}
+
+.hover-link:hover[b-duukoo72sa] {
+    color: #28a745 !important;
+    padding-left: 10px; /* រុញអក្សរបន្តិចពេល hover */
+}
+
+/* ៤. Product/Crop Card Custom Styles */
+.product-card[b-duukoo72sa] {
+    border-radius: 18px;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    background: #fff;
+}
+
+.product-card:hover[b-duukoo72sa] {
+    transform: translateY(-8px);
+    box-shadow: 0 14px 28px rgba(0,0,0,0.1), 0 10px 10px rgba(0,0,0,0.08) !important;
+}
+
+/* ៥. UI Helpers & Buttons */
+.btn-success[b-duukoo72sa] {
+    background-color: #1b5e20;
+    border-color: #1b5e20;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.btn-success:hover[b-duukoo72sa] {
+    background-color: #144d1a;
+    transform: scale(1.02);
+}
+
+.box-shadow[b-duukoo72sa] {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+/* បន្ថែម Space បាតក្រោមសម្រាប់ Container នីមួយៗ */
+.container[b-duukoo72sa] {
+    padding-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+    .navbar-nav .nav-link[b-duukoo72sa]::after {
+        content: "";
+        position: relative;
+        width: 0;
+        height: 2px;
+        bottom: 2px;
+        left: 0;                 /* 👉 ចាប់ពីឆ្វេង */
+        background-color: #ffc107;
+        transition: all 0.3s ease;
+        transform: none;         /* 👉 លុប translate */
+    }
+}

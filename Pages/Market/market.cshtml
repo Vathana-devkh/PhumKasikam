@@ -1,0 +1,637 @@
+@page
+@model PhumKasikam.Pages.Market.MarketModel
+@{
+    ViewData["Title"] = "ហាងទំនិញ - ភូមិកសិកម្ម";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+<div class="container mt-5 pt-4 position-relative main-store" style="font-family: 'Kantumruy Pro', sans-serif;">
+    
+    <form id="antiForgeryForm" method="post">
+        @Html.AntiForgeryToken()
+    </form>
+
+    <div class="row mb-5 align-items-center rounded-4 p-4 p-md-5 g-4" style="background: linear-gradient(135deg, #114227 0%, #198754 100%); color: white;" data-aos="fade-down">
+        <div class="col-md-7">
+            <span class="badge bg-white bg-opacity-20 text-warning px-3 py-2 rounded-pill mb-2 fw-bold"><i class="bi bi-patch-check-fill me-1"></i> E-COMMERCE PLATFORM</span>
+            <h1 class="fw-bold display-5 mb-3">ភូមិកសិកម្ម ឌីជីថលស្តរ</h1>
+            <p class="opacity-75 fs-5 mb-4">ប្រភពដុំនិងរាយ កសិផលខ្មែរធម្មជាតិ សុវត្ថិភាព ស្រស់ៗពីចម្ការ ធានាតម្លៃសមរម្យ និងដឹកជញ្ជូនរហ័សទាន់ចិត្ត។</p>
+            <a href="#productsGrid" class="btn btn-warning rounded-pill px-4 py-2.5 fw-bold text-dark shadow-sm">ទិញឥឡូវនេះ <i class="bi bi-arrow-down-short ms-1"></i></a>
+        </div>
+        <div class="col-md-5 text-center d-none d-md-block">
+            <i class="bi bi-shop-window display-1 opacity-25" style="font-size: 10rem;"></i>
+        </div>
+    </div>
+
+    <div class="text-center mb-3" data-aos="fade-up">
+        <h5 class="fw-bold text-secondary text-uppercase tracking-wider small">ជម្រើសជំពូកទំនិញ</h5>
+    </div>
+    <div class="d-flex justify-content-center flex-wrap gap-2 mb-5" data-aos="fade-up" data-aos-delay="50">
+        <button class="btn btn-category active rounded-pill px-4 py-2" onclick="filterCategory('all', this)">
+             <i class="bi bi-grid-fill me-2"></i>ទាំងអស់
+        </button>
+        <button class="btn btn-category rounded-pill px-4 py-2" onclick="filterCategory('បន្លែសរីរាង្គ', this)">
+            <i class="bi bi-egg text-success me-2"></i>បន្លែសរីរាង្គ
+        </button>
+        <button class="btn btn-category rounded-pill px-4 py-2" onclick="filterCategory('ផ្លែឈើដាំដុះ', this)">
+            <i class="bi bi-apple text-danger me-2"></i>ផ្លែឈើដាំដុះ
+        </button>
+        <button class="btn btn-category rounded-pill px-4 py-2" onclick="filterCategory('គ្រាប់ពូជកសិកម្ម', this)">
+            <i class="bi bi-flower1 text-warning me-2"></i>គ្រាប់ពូជកសិកម្ម
+        </button>
+        <button class="btn btn-category rounded-pill px-4 py-2" onclick="filterCategory('ជី និងថ្នាំកសិកម្ម', this)">
+            <i class="bi bi-droplet-fill text-info me-2"></i>ជី និងថ្នាំកសិកម្ម
+        </button>
+    </div>
+
+    <div class="row mb-4 g-3 align-items-center justify-content-between" data-aos="fade-up">
+        <div class="col-md-5">
+            <div class="card border-0 shadow-sm rounded-pill p-1 bg-white border">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-success"></i></span>
+                    <input type="text" id="shopSearchInput" class="form-control border-0 shadow-none ps-1" placeholder="ស្វែងរកទំនិញដែលអ្នកត្រូវការ...">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 text-md-end d-flex justify-content-md-end gap-2 align-items-center">
+            <span class="text-muted small d-none d-lg-inline">ទំនិញក្នុងកន្ត្រក៖</span>
+            <button class="btn btn-dark rounded-pill px-4 py-2 position-relative btn-cart-trigger shadow-sm" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
+                <i class="bi bi-bag-check-fill text-warning me-2"></i> កន្ត្រករបស់អ្នក
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCount">0</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5" id="productsGrid">
+        @if (Model.Products != null && Model.Products.Any())
+        {
+            var delay = 50;
+            @foreach (var item in Model.Products)
+            {
+                <div class="col-xl-3 col-lg-4 col-md-6 product-item-container" data-category="@item.Category" data-name="@item.Name" data-aos="fade-up" data-aos-delay="@delay">
+                    <div class="card h-100 product-card border-0 shadow-sm overflow-hidden rounded-4 bg-white position-relative">
+                        <span class="badge glass-badge position-absolute top-0 start-0 m-3 z-3">@item.Category</span>
+                        
+                        @if (item.OriginalPrice.HasValue && item.OriginalPrice > item.Price)
+                        {
+                            <span class="badge bg-danger position-absolute top-0 end-0 m-3 z-3 rounded-pill px-2.5 py-1.5 small shadow-sm animate__animated animate__pulse animate__infinite"><i class="bi bi-lightning-fill"></i> បញ្ចុះតម្លៃ</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success position-absolute top-0 end-0 m-3 z-3 rounded-pill px-2.5 py-1.5 small shadow-sm"><i class="bi bi-shield-check"></i> មានស្តុក</span>
+                        }
+
+                        <div class="position-relative overflow-hidden img-container">
+                            @if (string.IsNullOrEmpty(item.ImageUrl))
+                            {
+                                <img src="https://placehold.co/600x400?text=No+Image" class="card-img-top img-zoom" alt="@item.Name">
+                            }
+                            else if (item.ImageUrl.StartsWith("http://") || item.ImageUrl.StartsWith("https://"))
+                            {
+                                <img src="@item.ImageUrl" class="card-img-top img-zoom" alt="@item.Name">
+                            }
+                            else
+                            {
+                                <img src="@Url.Content("~" + item.ImageUrl)" class="card-img-top img-zoom" alt="@item.Name">
+                            }
+                            
+                            <div class="product-action-overlay d-flex align-items-center justify-content-center gap-2">
+                                <button class="btn btn-light rounded-circle shadow-sm" onclick="openQuickView('@item.Name', '@item.Category', '@item.Price', '@item.OriginalPrice', '@item.Unit', '@item.Description', '@(string.IsNullOrEmpty(item.ImageUrl) ? "https://placehold.co/600x400?text=No+Image" : item.ImageUrl.StartsWith("http") ? item.ImageUrl : Url.Content("~" + item.ImageUrl))')" title="មើលរហ័ស">
+                                    <i class="bi bi-eye-fill text-dark"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body p-3.5 d-flex flex-column">
+                            <h6 class="fw-bold text-dark mb-2 product-title-text fs-6 text-hover-success">@item.Name</h6>
+                            
+                            <p class="card-text text-muted mb-3 small flex-grow-1 truncate-description" style="line-height: 1.5; font-size: 0.85rem;" title="@item.Description">
+                                @(item.Description ?? "មិនមានការពិពណ៌នាឡើយ។")
+                            </p>
+                            
+                            <div class="d-flex align-items-center gap-2 mt-auto pt-2 border-top">
+                                <div class="flex-grow-1">
+                                    <span class="h5 fw-bold text-success mb-0 d-block">@item.Price.ToString("N0") ៛</span>
+                                    @if (item.OriginalPrice.HasValue && item.OriginalPrice > item.Price)
+                                    {
+                                        <span class="text-danger" style="font-size: 0.75rem; font-weight: bold;">តម្លៃដើម: <del>@item.OriginalPrice.Value.ToString("N0") ៛</del></span>
+                                    }
+                                </div>
+                                <span class="badge bg-light text-secondary border px-2 py-1.5 rounded-3 font-monospace small">/ @item.Unit</span>
+                            </div>
+                        </div>
+                        
+                        <div class="p-3 bg-white border-0">
+                            <button class="btn btn-outline-success w-100 rounded-pill fw-bold py-2 btn-add-to-cart transition-all" 
+                                    data-id="@item.Id" 
+                                    data-name="@item.Name" 
+                                    data-price="@item.Price"
+                                    data-unit="@item.Unit"
+                                    data-image="@(string.IsNullOrEmpty(item.ImageUrl) ? "https://placehold.co/600x400?text=No+Image" : item.ImageUrl.StartsWith("http") ? item.ImageUrl : Url.Content("~" + item.ImageUrl))">
+                                <i class="bi bi-cart-plus me-1"></i> ថែមចូលកន្ត្រក
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                delay += 20;
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5">
+                <div class="alert alert-light border shadow-sm p-5 rounded-4 bg-white">
+                    <i class="bi bi-bag-x text-muted display-4"></i>
+                    <p class="mt-3 text-muted mb-0">មិនទាន់មានទំនិញដាក់លក់ក្នុងហាងនៅឡើយទេ។</p>
+                </div>
+            </div>
+        }
+
+        <div class="col-12 text-center py-5 d-none" id="noProductsFound">
+            <div class="alert alert-light border shadow-sm p-5 rounded-4 bg-white">
+                <i class="bi bi-search display-4 text-muted"></i>
+                <p class="mt-3 text-muted mb-0">មិនមានទំនិញដែលអ្នកកំពុងស្វែងរកឡើយ。</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-end border-0 shadow-lg" tabindex="-1" id="cartOffcanvas" aria-labelledby="cartOffcanvasLabel" style="background: rgba(255,255,255,0.96); backdrop-filter: blur(20px); width: 400px; max-width: 100%;">
+    <div class="offcanvas-header bg-dark text-white p-4">
+        <h5 class="offcanvas-title fw-bold" id="cartOffcanvasLabel" style="font-family: 'Kantumruy Pro';"><i class="bi bi-bag-check-fill text-warning me-2"></i>កន្ត្រកទំនិញរបស់អ្នក</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-4 d-flex flex-column h-100" style="font-family: 'Kantumruy Pro';">
+        <div class="cart-items-list flex-grow-1 overflow-y-auto" id="cartItemsContainer"></div>
+        <div class="border-top pt-4 mt-auto">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="fw-bold fs-5 text-dark">ទឹកប្រាក់សរុប៖</span>
+                <span class="fw-bold fs-4 text-success" id="cartTotal">0 ៛</span>
+            </div>
+            <button class="btn btn-success w-100 rounded-pill py-3 fw-bold fs-5 shadow-sm" id="btnCheckout" disabled>
+                <i class="bi bi-credit-card-2-front-fill me-2"></i> គិតលុយ (Checkout)
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="quickViewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg" style="font-family: 'Kantumruy Pro';">
+            <div class="modal-body p-0">
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3 z-3 bg-white p-2 rounded-circle shadow-sm" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="row g-0">
+                    <div class="col-md-6 bg-light d-flex align-items-center justify-content-center">
+                        <img id="qv-image" src="" class="img-fluid w-100 h-100 object-fit-cover" style="min-height: 350px; max-height: 450px;">
+                    </div>
+                    <div class="col-md-6 p-4 d-flex flex-column justify-content-center">
+                        <span id="qv-category" class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1.5 align-self-start fw-bold mb-2"></span>
+                        <h4 id="qv-name" class="fw-bold text-dark mb-2"></h4>
+                        
+                        <div class="mb-3">
+                            <span id="qv-price" class="h3 fw-bold text-success"></span> <span class="h3 text-success fw-bold">៛</span>
+                            <span id="qv-discount-wrapper" class="text-muted small ms-2"></span>
+                            <span id="qv-unit" class="text-muted small ms-1"></span>
+                        </div>
+                        
+                        <p id="qv-description" class="text-muted small mb-4" style="line-height: 1.6;"></p>
+                        
+                        <div class="p-3 bg-light rounded-3 mb-4 border border-light">
+                            <small class="text-secondary d-block mb-1"><i class="bi bi-truck text-success me-1"></i> សេវាដឹកជញ្ជូនរហ័ស</small>
+                            <small class="text-muted text-xs">បញ្ជាទិញឥឡូវនេះ ទំនិញនឹងដឹកទៅដល់ទីតាំងរបស់អ្នកក្នុងរយៈពេល ២៤ ម៉ោង។</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 rounded-4 shadow-lg" style="font-family: 'Kantumruy Pro', sans-serif;">
+            <div class="modal-header bg-success text-white p-4 rounded-top-4">
+                <h5 class="modal-title fw-bold" id="checkoutModalLabel"><i class="bi bi-wallet2 me-2"></i>បំពេញព័ត៌មានការកម្ម៉ងទិញ និងទូទាត់ប្រាក់</h5>
+                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="checkoutForm" onsubmit="submitOrder(event)">
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-secondary">ឈ្មោះអ្នកទទួល <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control rounded-3" required id="orderName" placeholder="ឧ. សុខ ជា">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-secondary">លេខទូរស័ព្ទ <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control rounded-3" required id="orderPhone" placeholder="ឧ. 012345678">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-secondary">អ៊ីមែល (Gmail)</label>
+                            <input type="email" class="form-control rounded-3" id="orderEmail" placeholder="ឧ. example@gmail.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-secondary">តំបន់រស់នៅ <span class="text-danger">*</span></label>
+                            <select class="form-select rounded-3" id="orderRegion" onchange="toggleDeliveryOptions()" required>
+                                <option value="phnompenh" selected>ទីក្រុងភ្នំពេញ</option>
+                                <option value="province">បណ្តាខេត្ត</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold small text-secondary">អាសយដ្ឋាន / ទីតាំងលម្អិត <span class="text-danger">*</span></label>
+                            <textarea class="form-control rounded-3" rows="2" id="orderLocation" required placeholder="បំពេញផ្ទះលេខ ផ្លូវ សង្កាត់ ខណ្ឌ..."></textarea>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="card p-3 border-light-subtle bg-light rounded-3">
+                                <h6 class="fw-bold text-success mb-3"><i class="bi bi-truck me-1"></i>សេវាកម្មដឹកជញ្ជូន</h6>
+                                
+                                <div id="deliveryPP">
+                                    <label class="form-label small text-muted">ជ្រើសរើសដៃគូដឹកជញ្ជូនរហ័ស (ភ្នំពេញ)៖</label>
+                                    <div class="d-flex gap-3 flex-wrap">
+                                        <div class="form-check bg-white p-2.5 px-3 rounded-3 border">
+                                            <input class="form-check-input ms-0 me-2" type="radio" name="delivPPService" id="grabService" value="Grab P2P" checked>
+                                            <label class="form-check-label fw-bold small text-dark" for="grabService">Grab P2P (ដឹកដល់ផ្ទះ)</label>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-info py-2 px-3 mt-3 mb-0 small rounded-3">
+                                        <i class="bi bi-info-circle me-1"></i> រង់ចាំទទួលទំនិញនៅទីតាំងរបស់អ្នក ក្នុងរយៈពេល ២៤ ម៉ោង។
+                                    </div>
+                                </div>
+
+                                <div id="deliveryProvince" class="d-none">
+                                    <label class="form-label small text-muted mb-2">ជ្រើសរើសក្រុមហ៊ុនដឹកជញ្ជូន៖</label>
+                                    <div class="d-flex gap-2 flex-wrap mb-3">
+                                        <div class="form-check bg-white p-2.5 px-3 rounded-3 border">
+                                            <input class="form-check-input ms-0 me-2" type="radio" name="delivProvService" id="vireak" value="វីរៈប៊ុនថាំ" checked>
+                                            <label class="form-check-label small fw-bold" for="vireak">វីរៈប៊ុនថាំ</label>
+                                        </div>
+                                        <div class="form-check bg-white p-2.5 px-3 rounded-3 border">
+                                            <input class="form-check-input ms-0 me-2" type="radio" name="delivProvService" id="jt" value="J&T">
+                                            <label class="form-check-label small fw-bold" for="jt">J&T</label>
+                                        </div>
+                                        <div class="form-check bg-white p-2.5 px-3 rounded-3 border">
+                                            <input class="form-check-input ms-0 me-2" type="radio" name="delivProvService" id="capitol" value="កាពីតូល">
+                                            <label class="form-check-label small fw-bold" for="capitol">កាពីតូល</label>
+                                        </div>
+                                        <div class="form-check bg-white p-2.5 px-3 rounded-3 border">
+                                            <input class="form-check-input ms-0 me-2" type="radio" name="delivProvService" id="l192" value="L192">
+                                            <label class="form-check-label small fw-bold" for="l192">L192</label>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="form-label fw-bold small text-secondary">ឈ្មោះសាខាទទួលទំនិញ <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control rounded-3" id="orderBranch" placeholder="ឧ. សាខាខេត្តសៀមរាប (ផ្សារលើ)">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 text-center my-2">
+                            <hr class="my-3 opacity-25">
+                            <h6 class="fw-bold text-dark mb-3"><i class="bi bi-qr-code-scan text-success me-1"></i> ស្កែនទូទាត់ប្រាក់នៅទីនេះ</h6>
+                            <div class="bg-light p-3 rounded-4 d-inline-block border">
+                                <img src="https://placehold.co/200x200?text=KHQR+Payment" class="img-fluid rounded-3 shadow-sm border" style="max-width: 180px;">
+                                <div class="mt-2 text-success fw-bold" id="checkoutPopupTotal">0 ៛</div>
+                            </div>
+                            
+                            <div class="mt-3 col-md-8 mx-auto text-start">
+                                <label class="form-label fw-bold small text-secondary"><i class="bi bi-cloud-arrow-up-fill text-primary me-1"></i> អាប់ឡូតរូបភាពវិក្កយបត្រ (Upload Payslip) <span class="text-danger">*</span></label>
+                                <input type="file" class="form-control rounded-3" id="orderPayslip" accept="image/*" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light p-3 rounded-bottom-4 border-top-0 d-flex justify-content-between">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">បោះបង់</button>
+                    <button type="submit" class="btn btn-success rounded-pill px-5 fw-bold shadow-sm"><i class="bi bi-check-circle-fill me-1"></i> កម្ម៉ង់ឥឡូវនេះ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <div class="modal-content border-0 rounded-4 text-center p-4 shadow-lg" style="font-family: 'Kantumruy Pro';">
+            <div class="modal-body">
+                <div class="text-success display-1 mb-3 animate__animated animate__bounceIn">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <h4 class="fw-bold text-dark mb-2">ការកម្ម៉ងទទួលបានជោគជ័យ!</h4>
+                <p class="text-muted small mb-4">ក្រុមការងារ ភូមិកសិកម្ម នឹងពិនិត្យមើលការបញ្ជាទិញរបស់អ្នក និងទាក់ទងទៅវិញក្នុងពេលឆាប់ៗនេះ។ សូមអរគុណ!</p>
+                <button type="button" class="btn btn-success w-100 rounded-pill py-2.5 fw-bold" data-bs-dismiss="modal">យល់ព្រម</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    let currentCategory = 'all';
+    let cart = [];
+
+    // ==========================================
+    // 1. មុខងារចម្រោះផលិតផល (Product Filter & Search)
+    // ==========================================
+    function filterCategory(category, element) {
+        currentCategory = category;
+        document.querySelectorAll('.btn-category').forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
+        executeSearchAndFilter();
+    }
+
+    function executeSearchAndFilter() {
+        const searchText = document.getElementById('shopSearchInput').value.toLowerCase().trim();
+        const items = document.querySelectorAll('.product-item-container');
+        let visibleCount = 0;
+
+        items.forEach(item => {
+            const itemCategory = item.getAttribute('data-category');
+            const itemName = item.getAttribute('data-name').toLowerCase();
+
+            const matchesCategory = (currentCategory === 'all' || itemCategory === currentCategory);
+            const matchesSearch = itemName.includes(searchText);
+
+            if (matchesCategory && matchesSearch) {
+                item.classList.remove('d-none');
+                visibleCount++;
+            } else {
+                item.classList.add('d-none');
+            }
+        });
+        document.getElementById('noProductsFound').classList.toggle('d-none', visibleCount > 0);
+    }
+
+    // ==========================================
+    // 2. មុខងារពិនិត្យមើលរហ័ស (Quick View Modal)
+    // ==========================================
+    function openQuickView(name, category, price, originalPrice, unit, description, image) {
+        document.getElementById('qv-name').innerText = name;
+        document.getElementById('qv-category').innerText = category;
+        document.getElementById('qv-price').innerText = parseFloat(price).toLocaleString();
+        document.getElementById('qv-unit').innerText = "/ " + unit;
+        document.getElementById('qv-description').innerText = description && description !== "null" ? description : "មិនមានការពិពណ៌នាបន្ថែមសម្រាប់ផលិតផលនេះទេ។";
+        document.getElementById('qv-image').src = image;
+
+        const discountWrapper = document.getElementById('qv-discount-wrapper');
+        if (originalPrice && parseFloat(originalPrice) > parseFloat(price)) {
+            discountWrapper.innerHTML = `តម្លៃដើម: <del class="text-danger">${parseFloat(originalPrice).toLocaleString()} ៛</del>`;
+        } else {
+            discountWrapper.innerHTML = '';
+        }
+
+        var qvModal = new bootstrap.Modal(document.getElementById('quickViewModal'));
+        qvModal.show();
+    }
+
+    // ==========================================
+    // 3. មុខងារបិទបើកជម្រើសសេវាដឹកជញ្ជូន (Dynamic Delivery Setup)
+    // ==========================================
+    function toggleDeliveryOptions() {
+        const region = document.getElementById('orderRegion').value;
+        const deliveryPP = document.getElementById('deliveryPP');
+        const deliveryProvince = document.getElementById('deliveryProvince');
+        const orderBranch = document.getElementById('orderBranch');
+        
+        if (region === 'phnompenh') {
+            deliveryPP.classList.remove('d-none');
+            deliveryProvince.classList.add('d-none');
+            orderBranch.removeAttribute('required');
+            orderBranch.value = ''; 
+        } else {
+            deliveryPP.classList.add('d-none');
+            deliveryProvince.classList.remove('d-none');
+            orderBranch.setAttribute('required', 'required');
+        }
+    }
+
+    // ==========================================
+    // 4. មុខងារផ្ញើការកម្ម៉ង់ទៅកាន់ Backend (AJAX Submit)
+    // ==========================================
+    function submitOrder(e) {
+        e.preventDefault();
+        
+        if (cart.length === 0) {
+            alert("កន្ត្រកទំនិញរបស់អ្នកទទេស្អាត! សូមជ្រើសរើសផលិតផលមុនពេលធ្វើការគិតលុយBound។");
+            return;
+        }
+
+        const region = document.getElementById('orderRegion').value;
+        let deliveryService = "";
+        let branch = "";
+
+        if (region === 'phnompenh') {
+            deliveryService = document.querySelector('input[name="delivPPService"]:checked').value;
+            branch = "ភ្នំពេញ (ដឹកដល់ទីតាំងផ្ទាល់)";
+        } else {
+            const selectedProvService = document.querySelector('input[name="delivProvService"]:checked');
+            deliveryService = selectedProvService ? selectedProvService.value : "វីរៈប៊ុនថាំ";
+            branch = document.getElementById('orderBranch').value.trim();
+        }
+
+        const formData = new FormData();
+        formData.append("CustomerName", document.getElementById('orderName').value.trim());
+        formData.append("Phone", document.getElementById('orderPhone').value.trim());
+        formData.append("Email", document.getElementById('orderEmail').value.trim());
+        formData.append("Region", region);
+        formData.append("Location", document.getElementById('orderLocation').value.trim());
+        formData.append("DeliveryService", deliveryService);
+        formData.append("BranchName", branch);
+        
+        const payslipInput = document.getElementById('orderPayslip');
+        if (payslipInput && payslipInput.files.length > 0) {
+            formData.append("PayslipFile", payslipInput.files[0]);
+        }
+
+        formData.append("CartItemsJson", JSON.stringify(cart));
+        
+        // 🟢 កែសម្រួល៖ ចាប់យក Antiforgery Token ចេញពី Form លាក់ដោយផ្ទាល់ និងមានសុវត្ថិភាព
+        const token = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]')?.value;
+        
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>កំពុងផ្ញើ...`;
+
+        fetch('?handler=SubmitOrder', {
+            method: 'POST',
+            headers: {
+                'RequestVerificationToken': token
+            },
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('ការតភ្ជាប់ទៅកាន់ប្រព័ន្ធមានបញ្ហា');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                const checkModalEl = document.getElementById('checkoutModal');
+                const checkoutModal = bootstrap.Modal.getInstance(checkModalEl);
+                if (checkoutModal) checkoutModal.hide();
+
+                document.getElementById('checkoutForm').reset();
+                localStorage.removeItem('phum_kasikam_cart');
+                cart = [];
+                updateCartUI();
+
+                setTimeout(() => {
+                    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                    successModal.show();
+                    
+                    document.getElementById('successModal').addEventListener('hidden.bs.modal', function () {
+                        window.location.reload();
+                    });
+                }, 400);
+            } else {
+                alert("មិនអាចបង្កើតការកម្ម៉ង់បានឡើយ៖ " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("មានកំហុសប្រព័ន្ធ៖ មិនអាចបញ្ជូនការកម្ម៉ង់របស់អ្នកបានទេ! សូមព្យាយាមម្តងទៀត។");
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        });
+    }
+
+    // ==========================================
+    // 5. ដំណើរការស្នូលពេលទំព័រលោតដំបូង (DOM Ready)
+    // ==========================================
+    document.addEventListener('DOMContentLoaded', function() {
+        AOS.init({ duration: 600, easing: 'ease-out-quad', once: true });
+        
+        document.getElementById('shopSearchInput').addEventListener('input', executeSearchAndFilter);
+        
+        const cartCount = document.getElementById('cartCount');
+        const cartItemsContainer = document.getElementById('cartItemsContainer');
+        const cartTotal = document.getElementById('cartTotal');
+        const btnCheckout = document.getElementById('btnCheckout');
+
+        // 🟢 មុខងារ Render កន្ត្រកទំនិញឡើងវិញ (Update Cart UI)
+        window.updateCartUI = function() {
+            localStorage.setItem('phum_kasikam_cart', JSON.stringify(cart));
+            let totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.innerText = totalQty;
+            
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `
+                    <div class="text-center text-muted py-5 empty-cart-msg">
+                        <i class="bi bi-cart3 display-1 opacity-25"></i>
+                        <p class="mt-3">កន្ត្រកទំនិញរបស់អ្នកទទេស្អាត...</p>
+                    </div>`;
+                cartTotal.innerText = "0 ៛";
+                document.getElementById('checkoutPopupTotal').innerText = "0 ៛";
+                btnCheckout.disabled = true;
+                return;
+            }
+
+            btnCheckout.disabled = false;
+            cartItemsContainer.innerHTML = '';
+            let totalMoney = 0;
+
+            cart.forEach(item => {
+                let itemSubtotal = item.price * item.quantity;
+                totalMoney += itemSubtotal;
+
+                cartItemsContainer.innerHTML += `
+                    <div class="card border-0 shadow-sm p-3 rounded-3 mb-3 bg-white border border-light animate__animated animate__fadeIn">
+                        <div class="d-flex align-items-center">
+                            <img src="${item.image}" class="rounded-3 object-fit-cover me-3" style="width: 60px; height: 60px;" onerror="this.src='https://placehold.co/600x400?text=No+Image'">
+                            <div class="flex-grow-1">
+                                <h6 class="fw-bold text-dark mb-0 small" style="font-size:0.85rem">${item.name}</h6>
+                                <span class="text-success small fw-bold">${item.price.toLocaleString()} ៛ <span class="text-muted font-monospace text-xs">/ ${item.unit || 'ឯកតា'}</span></span>
+                                <div class="d-flex align-items-center mt-1.5">
+                                    <button class="btn btn-sm btn-light border py-0 px-2" onclick="changeQuantity('${item.id}', -1)">-</button>
+                                    <span class="mx-2.5 fw-bold small">${item.quantity}</span>
+                                    <button class="btn btn-sm btn-light border py-0 px-2" onclick="changeQuantity('${item.id}', 1)">+</button>
+                                </div>
+                            </div>
+                            <button class="btn text-danger ms-2" onclick="removeItemFromCart('${item.id}')"><i class="bi bi-trash3"></i></button>
+                        </div>
+                    </div>`;
+            });
+
+            cartTotal.innerText = totalMoney.toLocaleString() + " ៛";
+            const popupTotal = document.getElementById('checkoutPopupTotal');
+            if (popupTotal) popupTotal.innerText = totalMoney.toLocaleString() + " ៛";
+        }
+
+        // 🟢 មុខងារកែប្រែចំនួន (បូក/ដក) នៅក្នុងកន្ត្រកទំនិញ
+        window.changeQuantity = function(id, amount) {
+            let item = cart.find(i => i.id === id);
+            if (item) {
+                item.quantity += amount;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(i => i.id !== id);
+                }
+                updateCartUI();
+            }
+        }
+
+        // 🟢 មុខងារលុបទំនិញចេញពីកន្ត្រក
+        window.removeItemFromCart = function(id) {
+            cart = cart.filter(item => item.id !== id);
+            updateCartUI();
+        }
+
+        // ព្រឹត្តិការណ៍ចុចប៊ូតង់ "ថែមចូលកន្ត្រក"
+        document.querySelectorAll('.btn-add-to-cart').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const name = this.getAttribute('data-name');
+                const price = parseFloat(this.getAttribute('data-price'));
+                const image = this.getAttribute('data-image');
+                const unit = this.getAttribute('data-unit');
+
+                let existingItem = cart.find(item => item.id === id);
+                if (existingItem) { 
+                    existingItem.quantity += 1; 
+                } else { 
+                    cart.push({ id, name, price, image, unit, quantity: 1 }); 
+                }
+                updateCartUI();
+                
+                const trigger = document.querySelector('.btn-cart-trigger');
+                trigger.classList.add('animate__animated', 'animate__rubberBand');
+                trigger.addEventListener('animationend', () => trigger.classList.remove('animate__animated', 'animate__rubberBand'));
+            });
+        });
+
+        // បើក Form បំពេញព័ត៌មាន (Checkout Modal)
+        btnCheckout.addEventListener('click', function() {
+            const cartOffcanvasEl = document.getElementById('cartOffcanvas');
+            const cartOffcanvas = bootstrap.Offcanvas.getInstance(cartOffcanvasEl);
+            if (cartOffcanvas) cartOffcanvas.hide();
+
+            const checkoutModal = new bootstrap.Modal(document.getElementById('checkoutModal'));
+            checkoutModal.show();
+        });
+
+        // ចាប់ផ្ដើមទាញយកទិន្នន័យដំបូងបង្អស់
+        cart = JSON.parse(localStorage.getItem('phum_kasikam_cart')) || [];
+        updateCartUI();
+    });
+</script>
+
+<style>
+    .btn-category { background: #ffffff; color: #495057; border: 1px solid rgba(0, 0, 0, 0.06); font-weight: 600; font-size: 0.9rem; transition: all 0.25s ease; }
+    .btn-category:hover { background: #f8f9fa; color: #198754; }
+    .btn-category.active { background: #198754 !important; color: #ffffff !important; border-color: #198754 !important; box-shadow: 0 6px 15px rgba(25, 135, 84, 0.2) !important; }
+    .product-card { transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); border: 1px solid rgba(0,0,0,0.04) !important; }
+    .product-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important; }
+    .img-container { height: 190px; background: #fdfdfd; }
+    .img-zoom { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+    .product-card:hover .img-zoom { transform: scale(1.05); }
+    .glass-badge { background: rgba(25, 135, 84, 0.85); backdrop-filter: blur(4px); color: white; font-weight: 600; font-size: 0.7rem; padding: 5px 10px; border-radius: 50px; }
+    .product-action-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.15); opacity: 0; transition: all 0.3s ease; z-index: 2; }
+    .product-card:hover .product-action-overlay { opacity: 1; }
+    .product-action-overlay .btn:hover { background: #198754 !important; color: white !important; }
+    .text-hover-success:hover { color: #198754 !important; cursor: pointer; }
+    .truncate-description { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; min-height: 2.6em; }
+</style>
