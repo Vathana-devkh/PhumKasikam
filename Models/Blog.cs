@@ -1,23 +1,24 @@
-using System;
+using System; // សម្រាប់ DateTime
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PhumKasikam.Models
+namespace PhumKasikam.Models // ត្រូវមាន Namespace នេះ
 {
     public class Blog
     {
         [Key]
         public int Id { get; set; }
-
-        [Required(ErrorMessage = "សូមបំពេញចំណងជើងអត្ថបទ")]
+        
+        [Required]
         [StringLength(255)]
         public string Title { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "សូមបំពេញខ្លឹមសារអត្ថបទ")]
+        
+        [Required]
         public string Content { get; set; } = string.Empty;
-
-        // 🟢 ត្រូវប្រាកដថាមានសញ្ញាសួរ (?) នេះ ដើម្បីប្រាប់ប្រព័ន្ធថាវាអាចផ្ទុកតម្លៃ Null បាននៅពេលដំបូង
-        public string? ImageUrl { get; set; } 
-
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        
+        public string? ImageUrl { get; set; }
+        
+        [Column(TypeName = "timestamp")] 
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

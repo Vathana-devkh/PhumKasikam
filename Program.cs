@@ -71,21 +71,28 @@ var app = builder.Build();
 // 🚀 ផ្នែក AUTOMATED DATABASE MIGRATION
 // ==========================================================================
 
+// 🚀 ផ្នែក AUTOMATED DATABASE MIGRATION
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
-        var context = services.GetRequiredService<ApplicationDbContext>(); 
-        Console.WriteLine("==> [PhumKasikam] Checking database connection...");
+        var context = services.GetRequiredService<ApplicationDbContext>();
         
-        context.Database.SetCommandTimeout(5); 
+        Console.WriteLine("==> [PhumKasikam] Checking and fixing database structure...");
+        
+        // ⚠️ ការពារករណី Error 42704 (datetime type does not exist)
+        // យើងលុបតារាង Blogs ចោលប្រសិនបើវាមានបញ្ហា ដើម្បីឱ្យ EF Core សង់ថ្មីដោយប្រើ timestamp
+        context.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS \"Blogs\" CASCADE;");
+        
+        context.Database.SetCommandTimeout(30); 
         context.Database.Migrate();
+        
         Console.WriteLine("==> [PhumKasikam] Database migration applied successfully!");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"==> [PhumKasikam] MIGRATION ERROR (App is still running): {ex.Message}");
+        Console.WriteLine($"==> [PhumKasikam] MIGRATION ERROR: {ex.Message}");
     }
 }
 
