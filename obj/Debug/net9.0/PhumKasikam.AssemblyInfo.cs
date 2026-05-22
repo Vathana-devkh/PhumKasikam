@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PhumKasikam")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7a0b7b987bbf631972aee517e9e73239091d445b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a71af8b85e39c6219dcc5a5066af661ffb46716a")]
 [assembly: System.Reflection.AssemblyProductAttribute("PhumKasikam")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PhumKasikam")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

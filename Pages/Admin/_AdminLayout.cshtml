@@ -127,11 +127,13 @@
             .sidebar .nav-link span { display: none; }
             .sidebar .nav-link { justify-content: center; margin: 6px 8px; padding: 12px; }
             .sidebar-brand span { display: none; }
-            .sidebar-brand { text-center: center; padding: 20px 0; justify-content: center; }
+            .sidebar-brand { text-align: center; padding: 20px 0; justify-content: center; }
         }
     </style>
 </head>
 <body>
+    <form id="logoutForm" method="post" asp-page="/Admin/Index" asp-page-handler="Logout" class="d-none"></form>
+
     <div class="container-fluid p-0 d-flex">
         <div class="sidebar col-auto col-md-3 col-xl-2 px-0 d-flex flex-column">
             <div class="sidebar-brand d-flex align-items-center border-bottom border-secondary border-opacity-10 w-100">
@@ -193,7 +195,13 @@
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="dropdownUser1">
                             <li><a class="dropdown-item d-flex align-items-center gap-2" href="#"><i class="bi bi-person text-muted"></i> ប្រវត្តិរូប</a></li>
                             <li><hr class="dropdown-divider text-light"></li>
-                            <li><a class="dropdown-item text-danger d-flex align-items-center gap-2" href="#"><i class="bi bi-box-arrow-left"></i> ចាកចេញ</a></li>
+                            <li>
+                                <a id="logoutBtn" class="dropdown-item text-danger d-flex align-items-center gap-2" href="#">
+                                    <i class="bi bi-box-arrow-left"></i>
+                                    ចាកចេញ
+                                </a>
+                            </li>
+
                         </ul>
                     </div>
                 </div>
@@ -221,6 +229,15 @@
                     link.classList.remove("active");
                 }
             });
+        });
+
+        document.getElementById("logoutBtn").addEventListener("click", function (e) {
+            e.preventDefault();
+            
+            if (confirm("តើអ្នកប្រាកដថាចង់ចាកចេញពីប្រព័ន្ធទេ?")) {
+                // 💡 បញ្ជាឱ្យ Form បាញ់ប្រភេទ POST ទៅកាន់ .NET Backend ដោយសុវត្ថិភាព
+                document.getElementById("logoutForm").submit();
+            }
         });
     </script>
 

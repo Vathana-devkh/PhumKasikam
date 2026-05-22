@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using PhumKasikam.Data; 
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +17,6 @@ builder.Configuration
 // ==========================================================================
 // 🛠️ ផ្នែករៀបចំ CONNECTION STRING ឱ្យដើរទាំងលើ LOCAL និង RENDER CLOUD
 // ==========================================================================
-
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
 
 if (string.IsNullOrEmpty(connectionString))
@@ -60,15 +60,25 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
             errorCodesToAdd: null);
     });
 
-    // 💡 ប្រាប់ EF Core ឱ្យរំលងការពិនិត្យ Pending Changes ដើម្បីកុំឱ្យវាបោះ Exception គាំង Migration
     options.ConfigureWarnings(warnings => 
         warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
 });
 
 // ==========================================================================
+// 🔐 ផ្នែកដំឡើង COOKIE AUTHENTICATION សម្រាប់ ADMIN (បន្ថែមថ្មី)
+// ==========================================================================
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Admin/Login"; // បើមិនទាន់បាន Login ទេ វានឹងរុញដោយស្វ័យប្រវត្តទៅទំព័រនេះ
+        options.ExpireTimeSpan = TimeSpan.FromHours(2); // រក្សាទុកការ Login ក្នុងម៉ាស៊ីនរយៈពេល ២ម៉ោង
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    });
+
+// ==========================================================================
 // 🧱 ផ្នែកដំឡើង SERVICES ផ្សេងៗ (គាំទ្រទាំង MVC និង RAZOR PAGES)
 // ==========================================================================
-
 builder.Services.AddControllersWithViews(); 
 builder.Services.AddRazorPages(); 
 builder.Services.AddEndpointsApiExplorer();
@@ -78,7 +88,6 @@ var app = builder.Build();
 // ==========================================================================
 // 🚀 ផ្នែក AUTOMATED DATABASE MIGRATION (STANDARD PRODUCTION RUN)
 // ==========================================================================
-
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -88,10 +97,8 @@ using (var scope = app.Services.CreateScope())
         
         Console.WriteLine("==> [PhumKasikam] Running automated database migrations...");
         
-        // 💡 កូដត្រូវបានកែមកជាស្តង់ដារធម្មតាវិញ ដោយមិនប្រើបញ្ជា DROP TABLE ទៀតទេ 
-        // ដើម្បីរក្សាទិន្នន័យដែលលោកអ្នកបញ្ចូលលើ Production ឱ្យនៅគង់វង្សរាល់ពេល Deploy លើកក្រោយៗ
         context.Database.SetCommandTimeout(60); 
-        context.Database.Migrate(); // រត់បង្កើតតារាងទាំងអស់ (Crops, Products, Merchants, Blogs) តាម Schema ថ្មី
+        context.Database.Migrate(); 
         
         Console.WriteLine("==> [PhumKasikam] Database migration applied successfully!");
     }
@@ -104,7 +111,6 @@ using (var scope = app.Services.CreateScope())
 // ==========================================================================
 // 🌐 HTTP REQUEST PIPELINE (MIDDLEWARES)
 // ==========================================================================
-
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -118,7 +124,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseRouting();
-app.UseAuthorization();
+
+// 💡 លំដាប់សំខាន់បំផុត៖ UseAuthentication ត្រូវតែនៅចន្លោះ UseRouting និង UseAuthorization
+app.UseAuthentication(); // 🔒 ពិនិត្យអត្តសញ្ញាណ (អ្នកណាជាអ្នកចូលប្រើ?)
+app.UseAuthorization();  // 🔑 ពិនិត្យសិទ្ធិ (តើគណនីនេះមានសិទ្ធិចូលមើលទេ?)
 
 // 💡 ភ្ជាប់ផ្លូវរត់ទាំង MVC និង Razor Pages ឱ្យដើរទន្ទឹមគ្នា
 app.MapControllerRoute(
