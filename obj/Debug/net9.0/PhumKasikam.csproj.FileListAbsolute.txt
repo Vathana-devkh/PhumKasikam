@@ -184,3 +184,15 @@ D:\DATA\VS Studio\PhumKasikam\obj\Debug\net9.0\ref\PhumKasikam.dll
 D:\DATA\VS Studio\PhumKasikam\obj\Debug\net9.0\compressed\5qyrj65662-a7uz92saia.gz
 D:\DATA\VS Studio\PhumKasikam\obj\Debug\net9.0\compressed\ztq6ncml1a-k93a6u1u8h.gz
 D:\DATA\VS Studio\PhumKasikam\obj\Debug\net9.0\compressed\08kwx7wvas-k93a6u1u8h.gz
+D:\DATA\VS Studio\PhumKasikam\bin\Debug\net9.0\Microsoft.Extensions.Caching.Abstractions.dll
+D:\DATA\VS Studio\PhumKasikam\bin\Debug\net9.0\Microsoft.Extensions.Caching.Memory.dll
+D:\DATA\VS Studio\PhumKasikam\bin\Debug\net9.0\Microsoft.Extensions.Configuration.Abstractions.dll
+D:\DATA\VS Studio\PhumKasikam\bin\Debug\net9.0\Microsoft.Extensions.DependencyInjection.dll
+D:\DATA\VS Studio\PhumKasikam\bin\Debug\net9.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+D:\DATA\VS Studio\PhumKasikam\bin\Debug\net9.0\Microsoft.Extensions.Logging.dll
+D:\DATA\VS Studio\PhumKasikam\bin\Debug\net9.0\Microsoft.Extensions.Logging.Abstractions.dll
+D:\DATA\VS Studio\PhumKasikam\bin\Debug\net9.0\Microsoft.Extensions.Options.dll
+D:\DATA\VS Studio\PhumKasikam\bin\Debug\net9.0\Microsoft.Extensions.Primitives.dll
+D:\DATA\VS Studio\PhumKasikam\bin\Debug\net9.0\Npgsql.dll
+D:\DATA\VS Studio\PhumKasikam\bin\Debug\net9.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
+D:\DATA\VS Studio\PhumKasikam\obj\Debug\net9.0\PhumKasikam.sourcelink.json
