@@ -76,7 +76,7 @@ builder.Services.AddEndpointsApiExplorer();
 var app = builder.Build();
 
 // ==========================================================================
-// 🚀 ផ្នែក AUTOMATED DATABASE MIGRATION
+// 🚀 ផ្នែក AUTOMATED DATABASE MIGRATION (CLEAN & FRESH DEPLOY)
 // ==========================================================================
 
 using (var scope = app.Services.CreateScope())
@@ -86,23 +86,25 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
         
-        Console.WriteLine("==> [PhumKasikam] Checking and fixing database structure...");
+        Console.WriteLine("==> [PhumKasikam] Resetting database structure for a clean deploy...");
         
-        // ⚠️ ការពារករណី Error 42704 (datetime type does not exist) លើ PostgreSQL
-        // លុបតារាង Blogs ចាស់ចោលសិន ដើម្បីឱ្យប្រព័ន្ធសង់ឡើងវិញដោយប្រើប្រភេទ timestamp
+        // 💡 លុបតារាងចាស់ៗទាំងអស់ចោលជាបណ្ដោះអាសន្ន ដើម្បីការពារការជាន់គ្នានៃទិន្នន័យចាស់-ថ្មី
         context.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS \"Blogs\" CASCADE;");
+        context.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS \"Crops\" CASCADE;");
+        context.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS \"Products\" CASCADE;");
+        context.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS \"Merchants\" CASCADE;");
+        context.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS \"__EFMigrationsHistory\" CASCADE;"); // លុប History ចោលដើម្បីឱ្យវាចាប់ផ្ដើមសង់ពីសូន្យ
         
         context.Database.SetCommandTimeout(60); 
-        context.Database.Migrate(); // រត់បង្កើតតារាង Crops, Products, Merchants, និង Blogs
+        context.Database.Migrate(); // បញ្ជាឱ្យ EF Core សង់តារាងទាំងអស់ឡើងវិញឱ្យត្រូវតាម Model ចុងក្រោយបង្អស់
         
-        Console.WriteLine("==> [PhumKasikam] Database migration applied successfully!");
+        Console.WriteLine("==> [PhumKasikam] Database built from scratch successfully!");
     }
     catch (Exception ex)
     {
         Console.WriteLine($"==> [PhumKasikam] MIGRATION ERROR: {ex.Message}");
     }
 }
-
 // ==========================================================================
 // 🌐 HTTP REQUEST PIPELINE (MIDDLEWARES)
 // ==========================================================================
