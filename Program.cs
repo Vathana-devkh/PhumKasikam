@@ -63,7 +63,7 @@ builder.Services.AddEndpointsApiExplorer();
 var app = builder.Build();
 
 // ==========================================================================
-// 🚀 ផ្នែក AUTOMATED DATABASE MIGRATION (រត់ Migration ស្វ័យប្រវត្តពេល Deploy)
+// 🚀 ផ្នែក AUTOMATED DATABASE MIGRATION (កែសម្រួលថ្មីមិនឱ្យគាំង App)
 // ==========================================================================
 
 using (var scope = app.Services.CreateScope())
@@ -71,16 +71,19 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     try
     {
-        // 💡 ប្រើប្រាស់ ApplicationDbContext ពិតប្រាកដដើម្បីដោះស្រាយ Error មិញ
         var context = services.GetRequiredService<ApplicationDbContext>(); 
+        Console.WriteLine("==> [PhumKasikam] Checking database connection...");
         
-        Console.WriteLine("==> [PhumKasikam] Checking database connections and applying migrations...");
+        // កំណត់ Timeout ខ្លីត្រឹម ៥ វិនាទី បើភ្ជាប់មិនបានឱ្យវាលោតទៅ catch ភ្លាម មិនឱ្យគាំង App ឡើយ
+        context.Database.SetCommandTimeout(5); 
+        
         context.Database.Migrate();
         Console.WriteLine("==> [PhumKasikam] Database migration applied successfully!");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"==> [PhumKasikam] CRITICAL ERROR during migration: {ex.Message}");
+        // 🔒 កន្លែងសំខាន់៖ បើមាន Error វានឹងហួសទៅមុខទៀត មិនធ្វើឱ្យ App រលំឡើយ
+        Console.WriteLine($"==> [PhumKasikam] MIGRATION ERROR (App is still running): {ex.Message}");
     }
 }
 
