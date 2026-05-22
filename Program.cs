@@ -1,113 +1,84 @@
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
-using PhumKasikam.Data; // 💡 បានបន្ថែម Namespace របស់លោកអ្នកត្រឹមត្រូវ
+// សូមប្តូរតួអក្សរខាងក្រោមទៅតាម Namespace ពិតប្រាកដនៃគម្រោងរបស់លោកអ្នក (ឧទាហរណ៍៖ PhumKasikam.Data)
+using PhumKasikam.Data; 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ==========================================================================
-// 🛠️ ផ្នែករៀបចំ CONNECTION STRING ឱ្យដើរទាំងលើ LOCAL និង RENDER CLOUD
-// ==========================================================================
+// ==========================================
+// 1. CONFIGURING SERVICES (Dependency Injection)
+// ==========================================
 
-// 1. ព្យាយាមទាញយកខ្សែភ្ជាប់ពី Environment Variable របស់ Render មុនគេ (URL Format)
-var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+// បន្ថែមសេវាកម្ម Razor Pages ទៅក្នុងប្រព័ន្ធ (ដោះស្រាយបញ្ហា Error 404)
+builder.Services.AddRazorPages();
 
-if (string.IsNullOrEmpty(connectionString))
-{
-    // 2. ប្រសិនបើរត់លើ Cloud រកមិនឃើញ (រត់លើ Local) វាទាញពី Environment Variable ទម្រង់ .NET វិញ
-    connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
-}
+// ទាញយក Connection String ពី Environment Variable របស់ Render (ឈ្មោះ CONNECTION_STRING)
+// ប្រសិនបករកមិនឃើញនៅលើ Server វានឹងទាញចេញពី appsettings.json ជំនួសវិញ
+var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") 
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
-if (string.IsNullOrEmpty(connectionString))
-{
-    // 3. ប្រសិនបើនៅលើម៉ាស៊ីន Local គ្មាន Environment Variable ទេ វានឹងអានពី appsettings.json ធម្មតា
-    connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-}
-
-// 4. បម្លែងខ្សែភ្ជាប់ (ករណីវាជាទម្រង់ postgresql:// របស់ Render ឱ្យទៅជាទម្រង់ Host=... របស់ .NET)
-if (!string.IsNullOrEmpty(connectionString) && connectionString.StartsWith("postgresql://"))
-{
-    var databaseUri = new Uri(connectionString);
-    var userInfo = databaseUri.UserInfo.Split(':');
-
-    var npgsqlBuilder = new NpgsqlConnectionStringBuilder
-    {
-        Host = databaseUri.Host,
-        Port = databaseUri.Port,
-        Username = userInfo[0],
-        Password = userInfo.Length > 1 ? userInfo[1] : string.Empty,
-        Database = databaseUri.LocalPath.TrimStart('/'),
-        SslMode = SslMode.Require, // 🔒 បង្ខំឱ្យប្រើ SSL Mode ជានិច្ចលើ Cloud
-        TrustServerCertificate = true
-    };
-    connectionString = npgsqlBuilder.ToString();
-}
-
-// 5. ចាក់ខ្សែភ្ជាប់ចូលទៅក្នុង ApplicationDbContext ពិតប្រាកដរបស់អ្នក
+// កំណត់ការតភ្ជាប់ទៅកាន់ PostgreSQL Database តាមរយៈ Entity Framework Core
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString, npgsqlOptions =>
     {
-        // កំណត់ឱ្យរត់រាល់ពេលមានបញ្ហា Network បន្តិចបន្តួច (Resiliency)
+        // កំណត់ឱ្យ EF Core ព្យាយាមតភ្ជាប់ឡើងវិញដោយស្វ័យប្រវត្តិនៅពេលដាច់ Network ដុំកំភួន
         npgsqlOptions.EnableRetryOnFailure(
             maxRetryCount: 5,
             maxRetryDelay: TimeSpan.FromSeconds(30),
             errorCodesToAdd: null);
     }));
 
-// ==========================================================================
-// 🧱 ផ្នែកដំឡើង SERVICES ផ្សេងៗ (STANDARD .NET SERVICES)
-// ==========================================================================
-
-builder.Services.AddControllersWithViews(); 
-builder.Services.AddEndpointsApiExplorer();
-
 var app = builder.Build();
 
-// ==========================================================================
-// 🚀 ផ្នែក AUTOMATED DATABASE MIGRATION (កែសម្រួលថ្មីមិនឱ្យគាំង App)
-// ==========================================================================
+// ==========================================
+// 2. DATABASE AUTOMATED MIGRATIONS
+// ==========================================
 
+// កូដស្វ័យប្រវត្តិសម្រាប់រត់ Migration ភ្លាមៗនៅពេលដែល Application ចាប់ផ្ដើមដំណើរការ (Startup)
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
-        var context = services.GetRequiredService<ApplicationDbContext>(); 
-        Console.WriteLine("==> [PhumKasikam] Checking database connection...");
-        
-        // កំណត់ Timeout ខ្លីត្រឹម ៥ វិនាទី បើភ្ជាប់មិនបានឱ្យវាលោតទៅ catch ភ្លាម មិនឱ្យគាំង App ឡើយ
-        context.Database.SetCommandTimeout(5); 
-        
-        context.Database.Migrate();
-        Console.WriteLine("==> [PhumKasikam] Database migration applied successfully!");
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        // ពិនិត្យ និងរត់ Migration ដែលនៅសេសសល់ទាំងអស់ចូល Database ដោយស្វ័យប្រវត្តិ
+        if (context.Database.GetPendingMigrations().Any())
+        {
+            context.Database.Migrate();
+        }
     }
     catch (Exception ex)
     {
-        // 🔒 កន្លែងសំខាន់៖ បើមាន Error វានឹងហួសទៅមុខទៀត មិនធ្វើឱ្យ App រលំឡើយ
-        Console.WriteLine($"==> [PhumKasikam] MIGRATION ERROR (App is still running): {ex.Message}");
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating the database.");
     }
 }
 
-// ==========================================================================
-// 🌐 HTTP REQUEST PIPELINE (MIDDLEWARES)
-// ==========================================================================
+// ==========================================
+// 3. MIDDLEWARE PIPELINE (HTTP Request)
+// ==========================================
 
+// កំណត់លក្ខខណ្ឌសុវត្ថិភាព និងការបង្ហាញកំហុសទៅតាម Environment
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Error");
+    // កំណត់ឱ្យប្រើប្រាស់ HSTS (HTTP Strict Transport Security) នៅលើ Production
     app.UseHsts();
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
+app.UseHttpsRedirection();
 
+// អនុញ្ញាតឱ្យប្រព័ន្ធទាញយកឯកសារ Static Files (CSS, Images, JS) ពី Folder wwwroot
 app.UseStaticFiles();
+
 app.UseRouting();
+
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+// Map ផ្លូវរត់ (Routing) ទៅកាន់ Razor Pages ទាំងអស់នៅក្នុង Folder Pages (ដោះស្រាយបញ្ហា Error 404 ផ្ដាច់ឫស)
+app.MapRazorPages();
+
+// ==========================================
+// 4. RUN APPLICATION
+// ==========================================
 
 app.Run();
