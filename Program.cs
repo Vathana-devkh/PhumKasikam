@@ -37,7 +37,8 @@ if (!string.IsNullOrEmpty(connectionString) && connectionString.StartsWith("post
     var npgsqlBuilder = new NpgsqlConnectionStringBuilder
     {
         Host = databaseUri.Host,
-        Port = databaseUri.Port,
+        // 💡 កែតម្រូវត្រង់នេះ៖ ប្រសិនបើ Port ស្មើ -1 (មិនបានបញ្ជាក់) សូមប្រើ 5432 ជំនួសវិញ
+        Port = databaseUri.Port > 0 ? databaseUri.Port : 5432, 
         Username = userInfo[0],
         Password = userInfo.Length > 1 ? userInfo[1] : string.Empty,
         Database = databaseUri.LocalPath.TrimStart('/'),
