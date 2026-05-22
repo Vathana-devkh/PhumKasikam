@@ -31,10 +31,10 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Location",
                 table: "Merchants",
-                type: "longtext",
+                type: "text",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "longtext")
+                oldType: "text")
                 .Annotation("MySql:CharSet", "utf8mb4")
                 .OldAnnotation("MySql:CharSet", "utf8mb4");
         }
@@ -71,10 +71,10 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Location",
                 table: "Merchants",
-                type: "longtext",
+                type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "longtext",
+                oldType: "text",
                 oldNullable: true)
                 .Annotation("MySql:CharSet", "utf8mb4")
                 .OldAnnotation("MySql:CharSet", "utf8mb4");

@@ -13,7 +13,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "PriceType",
                 table: "Products",
-                type: "longtext",
+                type: "text",
                 nullable: true)
                 .Annotation("MySql:CharSet", "utf8mb4");
         }

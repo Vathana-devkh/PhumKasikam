@@ -18,7 +18,7 @@ namespace PhumKasikam.Migrations
                 type: "text",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "longtext",
+                oldType: "text",
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
@@ -27,7 +27,7 @@ namespace PhumKasikam.Migrations
                 type: "text",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "longtext",
+                oldType: "text",
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<decimal>(
@@ -53,7 +53,7 @@ namespace PhumKasikam.Migrations
                 type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "longtext");
+                oldType: "text");
 
             migrationBuilder.AlterColumn<string>(
                 name: "ImageUrl",
@@ -61,7 +61,7 @@ namespace PhumKasikam.Migrations
                 type: "text",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "longtext",
+                oldType: "text",
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
@@ -70,7 +70,7 @@ namespace PhumKasikam.Migrations
                 type: "text",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "longtext",
+                oldType: "text",
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
@@ -79,7 +79,7 @@ namespace PhumKasikam.Migrations
                 type: "text",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "longtext",
+                oldType: "text",
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<int>(
@@ -97,7 +97,7 @@ namespace PhumKasikam.Migrations
                 type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "longtext");
+                oldType: "text");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
@@ -105,7 +105,7 @@ namespace PhumKasikam.Migrations
                 type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "longtext");
+                oldType: "text");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Location",
@@ -113,7 +113,7 @@ namespace PhumKasikam.Migrations
                 type: "text",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "longtext",
+                oldType: "text",
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
@@ -122,7 +122,7 @@ namespace PhumKasikam.Migrations
                 type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "longtext");
+                oldType: "text");
 
             migrationBuilder.AlterColumn<int>(
                 name: "Id",
@@ -169,7 +169,7 @@ namespace PhumKasikam.Migrations
                 type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "longtext");
+                oldType: "text");
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "OrderDate",
@@ -195,7 +195,7 @@ namespace PhumKasikam.Migrations
                 type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "longtext");
+                oldType: "text");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Email",
@@ -224,7 +224,7 @@ namespace PhumKasikam.Migrations
                 type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "longtext");
+                oldType: "text");
 
             migrationBuilder.AlterColumn<string>(
                 name: "BranchName",
@@ -252,7 +252,7 @@ namespace PhumKasikam.Migrations
                 type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "longtext");
+                oldType: "text");
 
             migrationBuilder.AlterColumn<string>(
                 name: "ImageUrl",
@@ -260,7 +260,7 @@ namespace PhumKasikam.Migrations
                 type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "longtext");
+                oldType: "text");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Description",
@@ -268,7 +268,7 @@ namespace PhumKasikam.Migrations
                 type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "longtext");
+                oldType: "text");
 
             migrationBuilder.AlterColumn<int>(
                 name: "CategoryId",
@@ -284,7 +284,7 @@ namespace PhumKasikam.Migrations
                 type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "longtext");
+                oldType: "text");
 
             migrationBuilder.AlterColumn<int>(
                 name: "Id",
@@ -311,7 +311,7 @@ namespace PhumKasikam.Migrations
                 type: "text",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "longtext",
+                oldType: "text",
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<DateTime>(
@@ -328,7 +328,7 @@ namespace PhumKasikam.Migrations
                 type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "longtext");
+                oldType: "text");
 
             migrationBuilder.AlterColumn<int>(
                 name: "Id",
@@ -346,7 +346,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Unit",
                 table: "Products",
-                type: "longtext",
+                type: "text",
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "text",
@@ -355,7 +355,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "PriceType",
                 table: "Products",
-                type: "longtext",
+                type: "text",
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "text",
@@ -381,7 +381,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
                 table: "Products",
-                type: "longtext",
+                type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "text");
@@ -389,7 +389,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "ImageUrl",
                 table: "Products",
-                type: "longtext",
+                type: "text",
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "text",
@@ -398,7 +398,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Description",
                 table: "Products",
-                type: "longtext",
+                type: "text",
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "text",
@@ -407,7 +407,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Category",
                 table: "Products",
-                type: "longtext",
+                type: "text",
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "text",
@@ -425,7 +425,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "PhoneNumber",
                 table: "Merchants",
-                type: "longtext",
+                type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "text");
@@ -433,7 +433,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
                 table: "Merchants",
-                type: "longtext",
+                type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "text");
@@ -441,7 +441,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Location",
                 table: "Merchants",
-                type: "longtext",
+                type: "text",
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "text",
@@ -450,7 +450,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "BuyingProduct",
                 table: "Merchants",
-                type: "longtext",
+                type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "text");
@@ -497,7 +497,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "PayslipPath",
                 table: "CustomerOrders",
-                type: "longtext",
+                type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "text");
@@ -523,7 +523,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Location",
                 table: "CustomerOrders",
-                type: "longtext",
+                type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "text");
@@ -552,7 +552,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CartItems",
                 table: "CustomerOrders",
-                type: "longtext",
+                type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "text");
@@ -580,7 +580,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
                 table: "Crops",
-                type: "longtext",
+                type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "text");
@@ -588,7 +588,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "ImageUrl",
                 table: "Crops",
-                type: "longtext",
+                type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "text");
@@ -596,7 +596,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Description",
                 table: "Crops",
-                type: "longtext",
+                type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "text");
@@ -612,7 +612,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Category",
                 table: "Crops",
-                type: "longtext",
+                type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "text");
@@ -639,7 +639,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "ImageUrl",
                 table: "Blogs",
-                type: "longtext",
+                type: "text",
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "text",
@@ -656,7 +656,7 @@ namespace PhumKasikam.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Content",
                 table: "Blogs",
-                type: "longtext",
+                type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "text");
