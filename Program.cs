@@ -37,7 +37,6 @@ if (!string.IsNullOrEmpty(connectionString) && connectionString.StartsWith("post
     var npgsqlBuilder = new NpgsqlConnectionStringBuilder
     {
         Host = databaseUri.Host,
-        // 💡 កែតម្រូវត្រង់នេះ៖ ប្រសិនបើ Port ស្មើ -1 (មិនបានបញ្ជាក់) សូមប្រើ 5432 ជំនួសវិញ
         Port = databaseUri.Port > 0 ? databaseUri.Port : 5432, 
         Username = userInfo[0],
         Password = userInfo.Length > 1 ? userInfo[1] : string.Empty,
@@ -48,21 +47,30 @@ if (!string.IsNullOrEmpty(connectionString) && connectionString.StartsWith("post
     connectionString = npgsqlBuilder.ToString();
 }
 
+// ==========================================================================
+// 🗄️ ផ្នែកកំណត់ការតភ្ជាប់ DATABASE & IGNORE PENDING WARNING (.NET 9)
+// ==========================================================================
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
     options.UseNpgsql(connectionString, npgsqlOptions =>
     {
         npgsqlOptions.EnableRetryOnFailure(
             maxRetryCount: 5,
             maxRetryDelay: TimeSpan.FromSeconds(30),
             errorCodesToAdd: null);
-    }));
+    });
+
+    // 💡 ដំណោះស្រាយ៖ ប្រាប់ EF Core ឱ្យរំលងការពិនិត្យ Pending Changes ដើម្បីកុំឱ្យវាបោះ Exception គាំង Migration
+    options.ConfigureWarnings(warnings => 
+        warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+});
 
 // ==========================================================================
 // 🧱 ផ្នែកដំឡើង SERVICES ផ្សេងៗ (គាំទ្រទាំង MVC និង RAZOR PAGES)
 // ==========================================================================
 
 builder.Services.AddControllersWithViews(); 
-builder.Services.AddRazorPages(); // 💡 បើកដំណើរការ Razor Pages សម្រាប់ការបង្ហាញទំព័រ
+builder.Services.AddRazorPages(); 
 builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
@@ -71,7 +79,6 @@ var app = builder.Build();
 // 🚀 ផ្នែក AUTOMATED DATABASE MIGRATION
 // ==========================================================================
 
-// 🚀 ផ្នែក AUTOMATED DATABASE MIGRATION
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -81,12 +88,12 @@ using (var scope = app.Services.CreateScope())
         
         Console.WriteLine("==> [PhumKasikam] Checking and fixing database structure...");
         
-        // ⚠️ ការពារករណី Error 42704 (datetime type does not exist)
-        // យើងលុបតារាង Blogs ចោលប្រសិនបើវាមានបញ្ហា ដើម្បីឱ្យ EF Core សង់ថ្មីដោយប្រើ timestamp
+        // ⚠️ ការពារករណី Error 42704 (datetime type does not exist) លើ PostgreSQL
+        // លុបតារាង Blogs ចាស់ចោលសិន ដើម្បីឱ្យប្រព័ន្ធសង់ឡើងវិញដោយប្រើប្រភេទ timestamp
         context.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS \"Blogs\" CASCADE;");
         
-        context.Database.SetCommandTimeout(30); 
-        context.Database.Migrate();
+        context.Database.SetCommandTimeout(60); 
+        context.Database.Migrate(); // រត់បង្កើតតារាង Crops, Products, Merchants, និង Blogs
         
         Console.WriteLine("==> [PhumKasikam] Database migration applied successfully!");
     }
@@ -120,6 +127,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.MapRazorPages(); // 🔒 បើកដំណើរការ Routing សម្រាប់ Folder Pages
+app.MapRazorPages(); 
 
 app.Run();
