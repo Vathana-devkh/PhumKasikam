@@ -1,44 +1,110 @@
 using Microsoft.EntityFrameworkCore;
-using PhumKasikam.Data;
+using Npgsql;
+using PhumKasikam.Data; // 💡 បានបន្ថែម Namespace របស់លោកអ្នកត្រឹមត្រូវ
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. ទាញយក Connection String ពី appsettings.json (ឬពី Environment Variables លើ Cloud)
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// ==========================================================================
+// 🛠️ ផ្នែករៀបចំ CONNECTION STRING ឱ្យដើរទាំងលើ LOCAL និង RENDER CLOUD
+// ==========================================================================
 
-// 2. កែប្រែពី UseMySql មកប្រើ UseNpgsql សម្រាប់ PostgreSQL វិញ 💥
+// 1. ព្យាយាមទាញយកខ្សែភ្ជាប់ពី Environment Variable របស់ Render មុនគេ (URL Format)
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+if (string.IsNullOrEmpty(connectionString))
+{
+    // 2. ប្រសិនបើរត់លើ Cloud រកមិនឃើញ (រត់លើ Local) វាទាញពី Environment Variable ទម្រង់ .NET វិញ
+    connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+}
+
+if (string.IsNullOrEmpty(connectionString))
+{
+    // 3. ប្រសិនបើនៅលើម៉ាស៊ីន Local គ្មាន Environment Variable ទេ វានឹងអានពី appsettings.json ធម្មតា
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+}
+
+// 4. បម្លែងខ្សែភ្ជាប់ (ករណីវាជាទម្រង់ postgresql:// របស់ Render ឱ្យទៅជាទម្រង់ Host=... របស់ .NET)
+if (!string.IsNullOrEmpty(connectionString) && connectionString.StartsWith("postgresql://"))
+{
+    var databaseUri = new Uri(connectionString);
+    var userInfo = databaseUri.UserInfo.Split(':');
+
+    var npgsqlBuilder = new NpgsqlConnectionStringBuilder
+    {
+        Host = databaseUri.Host,
+        Port = databaseUri.Port,
+        Username = userInfo[0],
+        Password = userInfo.Length > 1 ? userInfo[1] : string.Empty,
+        Database = databaseUri.LocalPath.TrimStart('/'),
+        SslMode = SslMode.Require, // 🔒 បង្ខំឱ្យប្រើ SSL Mode ជានិច្ចលើ Cloud
+        TrustServerCertificate = true
+    };
+    connectionString = npgsqlBuilder.ToString();
+}
+
+// 5. ចាក់ខ្សែភ្ជាប់ចូលទៅក្នុង ApplicationDbContext ពិតប្រាកដរបស់អ្នក
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionString, npgsqlOptions =>
+    {
+        // កំណត់ឱ្យរត់រាល់ពេលមានបញ្ហា Network បន្តិចបន្តួច (Resiliency)
+        npgsqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorCodesToAdd: null);
+    }));
 
-// Add services to the container.
-builder.Services.AddRazorPages();
+// ==========================================================================
+// 🧱 ផ្នែកដំឡើង SERVICES ផ្សេងៗ (STANDARD .NET SERVICES)
+// ==========================================================================
+
+builder.Services.AddControllersWithViews(); 
+builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// ==========================================================================
+// 🚀 ផ្នែក AUTOMATED DATABASE MIGRATION (រត់ Migration ស្វ័យប្រវត្តពេល Deploy)
+// ==========================================================================
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        // 💡 ប្រើប្រាស់ ApplicationDbContext ពិតប្រាកដដើម្បីដោះស្រាយ Error មិញ
+        var context = services.GetRequiredService<ApplicationDbContext>(); 
+        
+        Console.WriteLine("==> [PhumKasikam] Checking database connections and applying migrations...");
+        context.Database.Migrate();
+        Console.WriteLine("==> [PhumKasikam] Database migration applied successfully!");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"==> [PhumKasikam] CRITICAL ERROR during migration: {ex.Message}");
+    }
+}
+
+// ==========================================================================
+// 🌐 HTTP REQUEST PIPELINE (MIDDLEWARES)
+// ==========================================================================
+
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
-// អនុញ្ញាតឱ្យប្រព័ន្ធបង្ហាញឯកសារ Static ដូចជា រូបភាព, CSS, និង JS
-app.UseStaticFiles(); 
-
+app.UseStaticFiles();
 app.UseRouting();
-
 app.UseAuthorization();
 
-app.MapRazorPages();
-
-// 3. កែតម្រូវកន្លែង Auto-Migration ឱ្យដំណើរការបានត្រឹមត្រូវ (ដំឡើងតារាងទៅ Cloud ស្វ័យប្រវត្តិ) 🛠️
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    // ប្រើប្រាស់ .GetAwaiter().GetResult() ព្រោះនៅក្នុង Program.cs មិនមែនជា async method ឡើយ
-    dbContext.Database.Migrate(); 
-}
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
