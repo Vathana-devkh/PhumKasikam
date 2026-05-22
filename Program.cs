@@ -60,7 +60,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
             errorCodesToAdd: null);
     });
 
-    // 💡 ដំណោះស្រាយ៖ ប្រាប់ EF Core ឱ្យរំលងការពិនិត្យ Pending Changes ដើម្បីកុំឱ្យវាបោះ Exception គាំង Migration
+    // 💡 ប្រាប់ EF Core ឱ្យរំលងការពិនិត្យ Pending Changes ដើម្បីកុំឱ្យវាបោះ Exception គាំង Migration
     options.ConfigureWarnings(warnings => 
         warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
 });
@@ -76,7 +76,7 @@ builder.Services.AddEndpointsApiExplorer();
 var app = builder.Build();
 
 // ==========================================================================
-// 🚀 ផ្នែក AUTOMATED DATABASE MIGRATION (CLEAN & FRESH DEPLOY)
+// 🚀 ផ្នែក AUTOMATED DATABASE MIGRATION (STANDARD PRODUCTION RUN)
 // ==========================================================================
 
 using (var scope = app.Services.CreateScope())
@@ -86,25 +86,21 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
         
-        Console.WriteLine("==> [PhumKasikam] Resetting database structure for a clean deploy...");
+        Console.WriteLine("==> [PhumKasikam] Running automated database migrations...");
         
-        // 💡 លុបតារាងចាស់ៗទាំងអស់ចោលជាបណ្ដោះអាសន្ន ដើម្បីការពារការជាន់គ្នានៃទិន្នន័យចាស់-ថ្មី
-        context.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS \"Blogs\" CASCADE;");
-        context.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS \"Crops\" CASCADE;");
-        context.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS \"Products\" CASCADE;");
-        context.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS \"Merchants\" CASCADE;");
-        context.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS \"__EFMigrationsHistory\" CASCADE;"); // លុប History ចោលដើម្បីឱ្យវាចាប់ផ្ដើមសង់ពីសូន្យ
-        
+        // 💡 កូដត្រូវបានកែមកជាស្តង់ដារធម្មតាវិញ ដោយមិនប្រើបញ្ជា DROP TABLE ទៀតទេ 
+        // ដើម្បីរក្សាទិន្នន័យដែលលោកអ្នកបញ្ចូលលើ Production ឱ្យនៅគង់វង្សរាល់ពេល Deploy លើកក្រោយៗ
         context.Database.SetCommandTimeout(60); 
-        context.Database.Migrate(); // បញ្ជាឱ្យ EF Core សង់តារាងទាំងអស់ឡើងវិញឱ្យត្រូវតាម Model ចុងក្រោយបង្អស់
+        context.Database.Migrate(); // រត់បង្កើតតារាងទាំងអស់ (Crops, Products, Merchants, Blogs) តាម Schema ថ្មី
         
-        Console.WriteLine("==> [PhumKasikam] Database built from scratch successfully!");
+        Console.WriteLine("==> [PhumKasikam] Database migration applied successfully!");
     }
     catch (Exception ex)
     {
         Console.WriteLine($"==> [PhumKasikam] MIGRATION ERROR: {ex.Message}");
     }
 }
+
 // ==========================================================================
 // 🌐 HTTP REQUEST PIPELINE (MIDDLEWARES)
 // ==========================================================================
